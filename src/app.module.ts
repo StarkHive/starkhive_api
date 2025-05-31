@@ -4,6 +4,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { User } from './auth/entities/user.entity';
 import { FeedModule } from './feed/feed.module';
+import { AntiSpamModule } from './anti-spam/anti-spam.module';
+import { JobModule } from './jobs/jobs.module'; // Corrected import name
+
 
 @Module({
   imports: [
@@ -30,6 +33,9 @@ import { FeedModule } from './feed/feed.module';
     }),
     AuthModule,
     FeedModule,
+    // SpamFlagModule, // Removed: module not found
+    AntiSpamModule,
+    JobModule, // Corrected import name
   ],
 })
 export class AppModule {}
