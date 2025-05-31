@@ -15,7 +15,17 @@ async function bootstrap() {
     .setTitle('StarkHive API')
     .setDescription('API documentation for StarkHive')
     .setVersion('1.0')
-    .addBearerAuth()
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'JWT',
+        description: 'Enter JWT token',
+        in: 'header',
+      },
+      'jwt-auth',
+    )
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
@@ -24,7 +34,9 @@ async function bootstrap() {
   const port = process.env.PORT ?? 5000;
   await app.listen(port);
   console.log(`StarkHive app listening on http://localhost:${port}/api/v1`);
-  console.log(`StarkHive Swagger docs available at http://localhost:${port}/api/docs`);
+  console.log(
+    `StarkHive Swagger docs available at http://localhost:${port}/api/docs`,
+  );
 }
 
 bootstrap();

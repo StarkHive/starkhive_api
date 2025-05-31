@@ -3,6 +3,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { User } from './auth/entities/user.entity';
+import { FeedModule } from './feed/feed.module';
+import { UsersModule } from './users/users.module';
+import { PostModule } from './post/post.module';
+import * as dotenv from 'dotenv';
+dotenv.config(); 
 
 @Module({
   imports: [
@@ -26,6 +31,9 @@ import { User } from './auth/entities/user.entity';
       }),
     }),
     AuthModule,
+    FeedModule,
+    UsersModule,
+    PostModule,
   ],
 })
 export class AppModule {}
