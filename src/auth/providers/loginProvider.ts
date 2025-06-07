@@ -49,7 +49,12 @@ export class LogInProvider {
 
 
     if (!user) {
-      throw new UnauthorizedException('email or password is incorrect');
+      throw new UnauthorizedException('Invalid email or password');
+    }
+
+    // Check if email is verified
+    if (!user.isEmailVerified) {
+      throw new UnauthorizedException('Please verify your email before logging in');
     }
 
     // Compare password

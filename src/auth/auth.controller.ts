@@ -43,6 +43,8 @@ import { LogInProvider } from './providers/loginProvider';
 import { AdminGuard } from './admin.guard';
 
 @ApiTags('auth')
+@ApiResponse({ status: 400, description: 'Bad Request' })
+@ApiResponse({ status: 401, description: 'Unauthorized' })
 @Controller('auth')
 export class AuthController {
   /**
@@ -66,6 +68,40 @@ export class AuthController {
     private readonly jobsService: JobsService,
     private readonly logInProvider: LogInProvider,
   ) {}
+
+  @Post('verify-email')
+  @ApiOperation({ summary: 'Verify user email with token' })
+  @ApiResponse({ status: 200, description: 'Email verified successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid or expired token' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        token: { type: 'string', example: 'a1b2c3d4e5f6g7h8i9j0' },
+      },
+    },
+  })
+  async verifyEmail(@Body('token') token: string) {
+    return this.authService.verifyEmail(token);
+  }
+
+  @Post('resend-verification')
+  @ApiOperation({ summary: 'Resend verification email' })
+  @ApiResponse({ status: 200, description: 'Verification email sent' })
+  @ApiResponse({ status: 400, description: 'Email is already verified' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        email: { type: 'string', format: 'email', example: 'user@example.com' },
+      },
+    },
+  })
+  async resendVerificationEmail(@Body('email') email: string) {
+    await this.authService.resendVerificationEmail(email);
+    return { message: 'Verification email sent successfully' };
+  }
 
   @Post('register')
   @ApiOperation({ summary: 'Register a new user as Freelancer or Recruiter' })

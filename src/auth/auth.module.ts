@@ -12,10 +12,11 @@ import { MailService} from '../mail/mail.service';
 import { LogInProvider } from './providers/loginProvider';
 import { GenerateTokensProvider } from './providers/generateTokensProvider';
 import { Portfolio } from './entities/portfolio.entity';
+import { EmailToken } from './entities/email-token.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, PasswordReset, Portfolio]),
+    TypeOrmModule.forFeature([User, PasswordReset, Portfolio, EmailToken]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
