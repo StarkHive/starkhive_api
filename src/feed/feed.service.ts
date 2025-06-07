@@ -7,12 +7,13 @@ import { Post } from './entities/post.entity';
 import { Report } from './entities/report.entity';
 import { CreateFeedDto } from './dto/create-feed.dto';
 import { UpdateFeedDto } from './dto/update-feed.dto';
-import { Job } from "../jobs/entities/job.entity"
+import { Job } from '../jobs/entities/job.entity';
 import { NotificationsService } from 'src/notifications/notifications.service';
 import { JobStatus } from './enums/job-status.enum';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { Comment } from './entities/comment.entity';
 import { User } from 'src/auth/entities/user.entity';
+import { Like } from './entities/like.entity';
 
 @Injectable()
 export class FeedService {
@@ -43,13 +44,22 @@ export class FeedService {
 
     private readonly notificationsService: NotificationsService,
 
-    @InjectRepository(Comment) 
+    @InjectRepository(Comment)
     private commentRepository: Repository<Comment>,
+
+    @InjectRepository(Like)
+    private readonly likeRepository: Repository<Like>,
   ) {}
 
-  async toggleSavePost(postId: number, userId: number): Promise<{ message: string }> {
+  async toggleSavePost(
+    postId: number,
+    userId: number,
+  ): Promise<{ message: string }> {
     const existing = await this.savedPostRepo.findOne({
-      where: { post: { id: postId.toString() }, user: { id: userId.toString() } },
+      where: {
+        post: { id: postId.toString() },
+        user: { id: userId.toString() },
+      },
       relations: ['post', 'user'],
     });
 
@@ -83,36 +93,43 @@ export class FeedService {
     };
   }
 
-  async getWeeklyNewPostsCount(): Promise<Array<{ week: string; count: number }>> {
+  async getWeeklyNewPostsCount(): Promise<
+    Array<{ week: string; count: number }>
+  > {
     const raw = await this.postRepository
       .createQueryBuilder('post')
-      .select(`TO_CHAR(DATE_TRUNC('week', post."createdAt"), 'YYYY-MM-DD')`, 'week')
+      .select(
+        `TO_CHAR(DATE_TRUNC('week', post."createdAt"), 'YYYY-MM-DD')`,
+        'week',
+      )
       .addSelect('COUNT(*)', 'count')
       .groupBy(`DATE_TRUNC('week', post."createdAt")`)
       .orderBy(`DATE_TRUNC('week', post."createdAt")`, 'DESC')
       .getRawMany<{ week: string; count: string }>();
 
-    return raw.map(r => ({
+    return raw.map((r) => ({
       week: r.week,
       count: parseInt(r.count, 10),
     }));
   }
 
   async moderateJob(jobId: string, status: JobStatus): Promise<Job> {
-    const job = await this.jobRepo.findOne({ where: { id: Number(jobId) }, relations: ['freelancer'] });
+    const job = await this.jobRepo.findOne({
+      where: { id: Number(jobId) },
+      relations: ['freelancer'],
+    });
     if (!job) throw new NotFoundException('Job not found');
-  
+
     job.status = status;
-  
+
     const updatedJob = await this.jobRepo.save(job);
-  
+
     await this.notificationsService.sendJobStatusNotification(
       job.freelancer.id,
       job.title,
-      status as 'approved' | 'rejected' 
+      status as 'approved' | 'rejected',
     );
-    
-  
+
     return updatedJob;
   }
 
@@ -148,6 +165,38 @@ export class FeedService {
 
     return await this.commentRepository.save(comment);
   }
+
+  async toggleLikePost(
+    postId: string,
+    userId: string,
+  ): Promise<{ message: string }> {
+    // Validate post exists
+    const post = await this.postRepository.findOne({ where: { id: postId } });
+    if (!post) {
+      throw new NotFoundException('Post not found');
+    }
+
+    const existing = await this.likeRepository.findOne({
+      where: {
+        post: { id: postId },
+        user: { id: userId },
+      },
+      relations: ['post', 'user'],
+    });
+
+    if (existing) {
+      await this.likeRepository.remove(existing);
+      return { message: 'Post unliked' };
+    }
+
+    const like = this.likeRepository.create({
+      post: { id: postId },
+      user: { id: userId },
+    });
+
+    await this.likeRepository.save(like);
+    return { message: 'Post liked' };
+  }
   // Optional CRUD methods - adjust as needed
   create(createFeedDto: CreateFeedDto) {
     return 'This action adds a new feed';
@@ -168,6 +217,4 @@ export class FeedService {
   remove(id: number) {
     return `This action removes a #${id} feed`;
   }
-
-
 }

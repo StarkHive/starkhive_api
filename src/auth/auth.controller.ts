@@ -5,13 +5,13 @@ import {
   HttpStatus,
   Post,
   UseGuards,
-  UseInterceptors,
-  UploadedFile,
+  // UseInterceptors,
+  // UploadedFile,
   Request,
-  Get,
+  // Get,
   Param,
   Patch,
-  Delete,
+  // Delete,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register-user.dto';
@@ -19,7 +19,7 @@ import { User } from './entities/user.entity';
 import { FeedService } from '../feed/feed.service';
 import { JobsService } from '../jobs/jobs.service';
 // import { LoginDto } from './dto/login-user.dto';
-import { CreatePortfolioDto } from './dto/create-portfolio.dto';
+// import { CreatePortfolioDto } from './dto/create-portfolio.dto';
 
 import {
   ApiTags,
@@ -27,20 +27,20 @@ import {
   ApiResponse,
   ApiBadRequestResponse,
   ApiUnauthorizedResponse,
-  ApiConsumes,
-  ApiBody,
+  // ApiConsumes,
+  // ApiBody,
 } from '@nestjs/swagger';
 import { Roles } from './decorators/role.decorator';
 import { UserRole } from './enums/userRole.enum';
 import { RolesGuard } from './guards/role.guard';
 import { AuthGuardGuard } from './guards/auth.guard';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { extname } from 'path';
+// import { FileInterceptor } from '@nestjs/platform-express';
+// import { diskStorage } from 'multer';
+// import { extname } from 'path';
 import { AuthGuard } from '@nestjs/passport';
 import { LogInDto } from './dto/loginDto';
 import { LogInProvider } from './providers/loginProvider';
-import { AdminGuard } from './admin.guard';
+// import { AdminGuard } from './admin.guard';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -49,14 +49,19 @@ export class AuthController {
    * Promote a user to admin. Only accessible by super admins.
    */
   @Patch('promote/:userId')
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard, RolesGuard)
   @Roles(UserRole.SUPER_ADMIN)
   @ApiOperation({ summary: 'Promote a user to admin (super admin only)' })
   @ApiResponse({ status: 200, description: 'User promoted to admin' })
-  @ApiUnauthorizedResponse({ description: 'Only super admins can promote users' })
+  @ApiUnauthorizedResponse({
+    description: 'Only super admins can promote users',
+  })
   @ApiBadRequestResponse({ description: 'Target user does not exist' })
   async promoteToAdmin(@Request() req, @Param('userId') userId: string) {
-    const updatedUser = await this.authService.promoteToAdmin(req.user.id, userId);
+    const updatedUser = await this.authService.promoteToAdmin(
+      req.user.id,
+      userId,
+    );
     return { message: `User ${updatedUser.email} has been promoted to admin.` };
   }
 
@@ -81,13 +86,8 @@ export class AuthController {
     return this.authService.register(registerDto);
   }
 
-
-  
- 
- 
   @Post('login')
   @ApiOperation({ summary: 'Login with email and password' })
-  
   @Roles(UserRole.ADMIN)
   @UseGuards(AuthGuardGuard, RolesGuard)
   @HttpCode(HttpStatus.OK)
@@ -100,15 +100,12 @@ export class AuthController {
   }
 
   @Post('request-password-reset')
-async requestPasswordReset(@Body('email') email: string) {
-  return this.authService.sendPasswordResetEmail(email);
-}
-
+  async requestPasswordReset(@Body('email') email: string) {
+    return await this.authService.sendPasswordResetEmail(email);
+  }
 
   @Post('reset-password')
   async resetPassword(@Body() body: { token: string; newPassword: string }) {
     return this.authService.resetPassword(body.token, body.newPassword);
   }
-
-
 }
