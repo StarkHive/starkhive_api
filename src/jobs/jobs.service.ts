@@ -50,9 +50,18 @@ export class JobsService {
     return job;
   }
 
-  async updateJob(id: number, updateJobDto: UpdateJobDto): Promise<Job> {
+  async updateJob(id: number, updateJobDto: UpdateJobDto, userId: number): Promise<Job> {
     const job = await this.findJobById(id);
+    
+    // Check if the user is the owner of the job
+    if (job.ownerId !== userId) {
+      throw new ForbiddenException('Only the job owner can update this job');
+    }
+    
+    // Update only the provided fields
     Object.assign(job, updateJobDto);
+    
+    // Save the updated job
     return this.jobRepository.save(job);
   }
 
@@ -66,6 +75,14 @@ export class JobsService {
 
   // Application CRUD
   async createApplication(createApplicationDto: CreateApplicationDto): Promise<Application> {
+    // Check if job is accepting applications
+    const job = await this.jobRepository.findOne({ where: { id: Number(createApplicationDto.jobId) } });
+    if (!job) {
+      throw new NotFoundException(`Job with ID ${createApplicationDto.jobId} not found`);
+    }
+    if (!job.isAcceptingApplications) {
+      throw new ForbiddenException('This job is not accepting applications.');
+    }
     const application = this.applicationRepository.create(createApplicationDto);
     return this.applicationRepository.save(application);
   }
@@ -141,6 +158,16 @@ export class JobsService {
     }
 
     job.status = updateStatusDto.status;
+    return this.jobRepository.save(job);
+  }
+
+  // Toggle isAcceptingApplications for a job
+  async toggleAcceptingApplications(jobId: number, isAccepting: boolean, userId: number): Promise<Job> {
+    const job = await this.findJobById(jobId);
+    if (job.ownerId !== userId) {
+      throw new ForbiddenException('Only the job owner can update this setting');
+    }
+    job.isAcceptingApplications = isAccepting;
     return this.jobRepository.save(job);
   }
 }

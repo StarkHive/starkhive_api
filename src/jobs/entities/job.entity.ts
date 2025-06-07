@@ -17,6 +17,15 @@ export class Job {
   @Column({ default: false })
   isFlagged: boolean;
 
+  @Column('decimal', { nullable: true })
+  budget?: number;
+
+  @Column({ type: 'timestamp', nullable: true })
+  deadline?: Date;
+
+  @Column({ default: true })
+  isAcceptingApplications: boolean;
+
   @Column({
     type: 'enum',
     enum: JobStatus,
@@ -40,11 +49,14 @@ export class Job {
 
   @CreateDateColumn()
   createdAt: Date;
+feature/job-edit-budget-deadline
+
 
   @UpdateDateColumn()
   updatedAt: Date;
 
   @Column({ nullable: true })
+main
   freelancer: any;
 }
  
