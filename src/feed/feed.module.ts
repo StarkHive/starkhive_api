@@ -10,7 +10,10 @@ import { NotificationsModule } from 'src/notifications/notifications.module';
 import { Comment } from './entities/comment.entity';
 
 @Module({
-  imports: [NotificationsModule, TypeOrmModule.forFeature([SavedPost, Post, Comment, Job])],
+  imports: [
+    NotificationsModule,
+    TypeOrmModule.forFeature([SavedPost, Post, Comment, Job, Report]),
+  ],
   controllers: [FeedController],
   providers: [FeedService],
   exports: [FeedService, TypeOrmModule],

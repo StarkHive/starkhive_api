@@ -1,8 +1,22 @@
-import { Controller, Post, Body, Get, Param, Patch, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Param,
+  Patch,
+  Request,
+} from '@nestjs/common';
 import { JobsService } from './jobs.service';
 import { UpdateJobStatusDto } from './dto/update-status.dto';
 import { CreateJobDto } from './dto/create-job.dto';
-// TODO: Import AuthGuard once authentication is implemented
+import { Request as ExpressRequest } from 'express';
+
+interface RequestWithUser extends ExpressRequest {
+  user?: {
+    id: string;
+  };
+}
 
 @Controller('jobs')
 export class JobsController {
@@ -23,10 +37,37 @@ export class JobsController {
   async updateStatus(
     @Param('id') id: string,
     @Body() updateStatusDto: UpdateJobStatusDto,
-    // TODO: Add @Request() req once authentication is implemented
+    @Request() req: RequestWithUser,
   ) {
     // TODO: Get userId from request once authentication is implemented
-    const userId = 1; // Placeholder
+    const userId = req.user?.id || '1'; // Placeholder
     return this.jobsService.updateJobStatus(+id, updateStatusDto, userId);
+  }
+
+  @Post(':id/save')
+  // TODO: Add @UseGuards(AuthGuard) once authentication is implemented
+  async toggleSaveJob(
+    @Param('id') id: string,
+    @Request() req: RequestWithUser,
+  ) {
+    // TODO: Get userId from request once authentication is implemented
+    const userId = req.user?.id || '1'; // Placeholder
+    return this.jobsService.toggleSaveJob(+id, userId);
+  }
+
+  @Get('saved')
+  // TODO: Add @UseGuards(AuthGuard) once authentication is implemented
+  async getSavedJobs(@Request() req: RequestWithUser) {
+    // TODO: Get userId from request once authentication is implemented
+    const userId = req.user?.id || '1'; // Placeholder
+    return this.jobsService.getSavedJobs(userId);
+  }
+
+  @Get(':id/saved')
+  // TODO: Add @UseGuards(AuthGuard) once authentication is implemented
+  async isJobSaved(@Param('id') id: string, @Request() req: RequestWithUser) {
+    // TODO: Get userId from request once authentication is implemented
+    const userId = req.user?.id || '1'; // Placeholder
+    return this.jobsService.isJobSaved(+id, userId);
   }
 }

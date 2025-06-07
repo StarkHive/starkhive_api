@@ -7,7 +7,7 @@ import { Post } from './entities/post.entity';
 import { Report } from './entities/report.entity';
 import { CreateFeedDto } from './dto/create-feed.dto';
 import { UpdateFeedDto } from './dto/update-feed.dto';
-import { Job } from "../jobs/entities/job.entity"
+import { Job } from '../jobs/entities/job.entity';
 import { NotificationsService } from 'src/notifications/notifications.service';
 import { JobStatus } from './enums/job-status.enum';
 import { CreateCommentDto } from './dto/create-comment.dto';
@@ -16,18 +16,6 @@ import { User } from 'src/auth/entities/user.entity';
 
 @Injectable()
 export class FeedService {
-  async createFeedPost(user: User, dto: CreatePostDto): Promise<Post> {
-    if (!dto.content || dto.content.trim().length === 0) {
-      throw new Error('Post content is required');
-    }
-    const post = this.postRepository.create({
-      content: dto.content,
-      image: dto.image,
-      user,
-    });
-    return await this.postRepository.save(post);
-  }
-
   constructor(
     @InjectRepository(SavedPost)
     private readonly savedPostRepo: Repository<SavedPost>,
@@ -43,13 +31,31 @@ export class FeedService {
 
     private readonly notificationsService: NotificationsService,
 
-    @InjectRepository(Comment) 
+    @InjectRepository(Comment)
     private commentRepository: Repository<Comment>,
   ) {}
 
-  async toggleSavePost(postId: number, userId: number): Promise<{ message: string }> {
+  async createFeedPost(user: User, dto: CreatePostDto): Promise<Post> {
+    if (!dto.content || dto.content.trim().length === 0) {
+      throw new Error('Post content is required');
+    }
+    const post = this.postRepository.create({
+      content: dto.content,
+      image: dto.image,
+      user,
+    });
+    return await this.postRepository.save(post);
+  }
+
+  async toggleSavePost(
+    postId: number,
+    userId: number,
+  ): Promise<{ message: string }> {
     const existing = await this.savedPostRepo.findOne({
-      where: { post: { id: postId.toString() }, user: { id: userId.toString() } },
+      where: {
+        post: { id: postId.toString() },
+        user: { id: userId.toString() },
+      },
       relations: ['post', 'user'],
     });
 
@@ -83,36 +89,43 @@ export class FeedService {
     };
   }
 
-  async getWeeklyNewPostsCount(): Promise<Array<{ week: string; count: number }>> {
+  async getWeeklyNewPostsCount(): Promise<
+    Array<{ week: string; count: number }>
+  > {
     const raw = await this.postRepository
       .createQueryBuilder('post')
-      .select(`TO_CHAR(DATE_TRUNC('week', post."createdAt"), 'YYYY-MM-DD')`, 'week')
+      .select(
+        `TO_CHAR(DATE_TRUNC('week', post."createdAt"), 'YYYY-MM-DD')`,
+        'week',
+      )
       .addSelect('COUNT(*)', 'count')
       .groupBy(`DATE_TRUNC('week', post."createdAt")`)
       .orderBy(`DATE_TRUNC('week', post."createdAt")`, 'DESC')
       .getRawMany<{ week: string; count: string }>();
 
-    return raw.map(r => ({
+    return raw.map((r) => ({
       week: r.week,
       count: parseInt(r.count, 10),
     }));
   }
 
   async moderateJob(jobId: string, status: JobStatus): Promise<Job> {
-    const job = await this.jobRepo.findOne({ where: { id: Number(jobId) }, relations: ['freelancer'] });
+    const job = await this.jobRepo.findOne({
+      where: { id: Number(jobId) },
+      relations: ['freelancer'],
+    });
     if (!job) throw new NotFoundException('Job not found');
-  
+
     job.status = status;
-  
+
     const updatedJob = await this.jobRepo.save(job);
-  
+
     await this.notificationsService.sendJobStatusNotification(
       job.freelancer.id,
       job.title,
-      status as 'approved' | 'rejected' 
+      status as 'approved' | 'rejected',
     );
-    
-  
+
     return updatedJob;
   }
 
@@ -168,6 +181,4 @@ export class FeedService {
   remove(id: number) {
     return `This action removes a #${id} feed`;
   }
-
-
 }
