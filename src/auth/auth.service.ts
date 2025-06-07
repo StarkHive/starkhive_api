@@ -182,5 +182,44 @@ export class AuthService {
     return await this.userRepository.findOne({ where: { email } });
   }
   
+  async getUsersWithFilters(page: number, limit: number, role?: UserRole, isSuspended?: boolean) {
+    const skip = (page - 1) * limit;
+    
+    const queryBuilder = this.userRepository
+      .createQueryBuilder('user')
+      .select([
+        'user.id',
+        'user.email',
+        'user.username',
+        'user.role',
+        'user.isSuspended',
+        'user.createdAt',
+        'user.updatedAt'
+      ]);
+
+    if (role) {
+      queryBuilder.andWhere('user.role = :role', { role });
+    }
+
+    if (isSuspended !== undefined) {
+      queryBuilder.andWhere('user.isSuspended = :isSuspended', { isSuspended });
+    }
+
+    const [users, total] = await queryBuilder
+      .skip(skip)
+      .take(limit)
+      .orderBy('user.createdAt', 'DESC')
+      .getManyAndCount();
+
+    return {
+      users,
+      meta: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit)
+      }
+    };
+  }
 }
 
