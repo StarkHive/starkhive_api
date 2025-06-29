@@ -1,8 +1,7 @@
-
 import { Injectable, NotFoundException, ForbiddenException, Inject } from '@nestjs/common';
 
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Not, IsNull, DataSource } from 'typeorm';
+import { Repository, Not, IsNull, DataSource, Brackets } from 'typeorm';
 
 import { Job } from 'src/job-posting/entities/job.entity';
 import { Application } from 'src/applications/entities/application.entity';
@@ -17,6 +16,7 @@ import {
   JobResponseDto,
   PaginatedJobResponseDto,
 } from 'src/job-posting/dto/job-response.dto';
+import { SearchJobsDto, JobSortBy } from './dto/search-jobs.dto';
 // import { JobAdapter } from './adapters/job.adapter'; // Uncomment if you create the adapter
 
 @Injectable()
@@ -83,7 +83,6 @@ export class JobsService {
     return query.getMany();
   }
 
-<<<<<<< feature/soft-delete-jobs
   async findJobById(id: number, includeDeleted: boolean = false): Promise<Job> {
     const query = this.jobRepository.createQueryBuilder('job')
       .where('job.id = :id', { id });
@@ -93,10 +92,6 @@ export class JobsService {
     }
     
     const job = await query.getOne();
-=======
-  async findJobById(id: string): Promise<Job> {
-    const job = await this.jobRepository.findOne({ where: { id } });
->>>>>>> main
     if (!job) {
       throw new NotFoundException(`Job with ID ${id} not found`);
     }
@@ -383,5 +378,100 @@ export class JobsService {
   async getSingleJobAsDto(id: string): Promise<JobResponseDto> {
     const job = await this.findJobById(id);
     return new JobResponseDto(job);
+  }
+
+  /**
+   * Advanced job search with full-text, filtering, sorting, and pagination
+   */
+  async advancedSearchJobs(dto: SearchJobsDto): Promise<PaginatedJobResponseDto> {
+    const {
+      q,
+      minBudget,
+      maxBudget,
+      deadlineFrom,
+      deadlineTo,
+      location,
+      jobType,
+      status,
+      experienceLevel,
+      skills,
+      sortBy = JobSortBy.DATE,
+      page = 1,
+      limit = 10,
+    } = dto;
+    const skip = (page - 1) * limit;
+
+    const query = this.jobRepository.createQueryBuilder('job');
+
+    // Only active jobs by default
+    if (!status) {
+      query.andWhere('job.status = :active', { active: 'active' });
+    } else {
+      query.andWhere('job.status = :status', { status });
+    }
+
+    // Full-text search (title, description, skills)
+    if (q) {
+      query.andWhere(
+        new Brackets((qb) => {
+          qb.where('job.title ILIKE :q', { q: `%${q}%` })
+            .orWhere('job.description ILIKE :q', { q: `%${q}%` })
+            .orWhere(`:q = ANY(job.skills)`, { q });
+        })
+      );
+    }
+
+    // Budget filtering
+    if (minBudget !== undefined) {
+      query.andWhere('(job.salaryMin IS NULL OR job.salaryMin >= :minBudget)', { minBudget });
+    }
+    if (maxBudget !== undefined) {
+      query.andWhere('(job.salaryMax IS NULL OR job.salaryMax <= :maxBudget)', { maxBudget });
+    }
+
+    // Deadline filtering
+    if (deadlineFrom) {
+      query.andWhere('(job.applicationDeadline IS NULL OR job.applicationDeadline >= :deadlineFrom)', { deadlineFrom });
+    }
+    if (deadlineTo) {
+      query.andWhere('(job.applicationDeadline IS NULL OR job.applicationDeadline <= :deadlineTo)', { deadlineTo });
+    }
+
+    // Location filtering (partial match)
+    if (location) {
+      query.andWhere('job.location ILIKE :location', { location: `%${location}%` });
+    }
+
+    // Job type, experience, skills
+    if (jobType) {
+      query.andWhere('job.jobType = :jobType', { jobType });
+    }
+    if (experienceLevel) {
+      query.andWhere('job.experienceLevel = :experienceLevel', { experienceLevel });
+    }
+    if (skills && skills.length > 0) {
+      for (const skill of skills) {
+        query.andWhere(`:skill = ANY(job.skills)`, { skill });
+      }
+    }
+
+    // Sorting
+    if (sortBy === JobSortBy.BUDGET) {
+      query.orderBy('job.salaryMax', 'DESC');
+    } else if (sortBy === JobSortBy.RELEVANCE && q) {
+      // For now, fallback to title match; for real relevance, use Postgres full-text search
+      query.orderBy('job.title', 'DESC');
+    } else {
+      query.orderBy('job.createdAt', 'DESC');
+    }
+
+    // Pagination
+    query.skip(skip).take(limit);
+
+    // Select only needed fields (optional for optimization)
+    // query.select(['job.id', 'job.title', ...]);
+
+    const [jobs, total] = await query.getManyAndCount();
+    return new PaginatedJobResponseDto(jobs, total, page, limit);
   }
 }
