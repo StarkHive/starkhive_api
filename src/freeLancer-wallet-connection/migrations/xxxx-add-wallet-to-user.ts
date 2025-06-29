@@ -1,4 +1,9 @@
-import { MigrationInterface, QueryRunner, TableColumn, TableIndex } from 'typeorm';
+import {
+  MigrationInterface,
+  QueryRunner,
+  TableColumn,
+  TableIndex,
+} from 'typeorm';
 
 export class AddWalletToUser1234567890123 implements MigrationInterface {
   name = 'AddWalletToUser1234567890123';
@@ -42,7 +47,7 @@ export class AddWalletToUser1234567890123 implements MigrationInterface {
   public async down(queryRunner: QueryRunner): Promise<void> {
     // Drop index
     await queryRunner.dropIndex('users', 'idx_wallet_address');
-    
+
     // Drop columns
     await queryRunner.dropColumn('users', 'wallet_connected_at');
     await queryRunner.dropColumn('users', 'wallet_address');

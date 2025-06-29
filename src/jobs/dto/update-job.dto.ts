@@ -1,5 +1,11 @@
 import { PartialType } from '@nestjs/swagger';
-import { IsString, IsOptional, IsBoolean, IsNumber, IsDateString } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsBoolean,
+  IsNumber,
+  IsDateString,
+} from 'class-validator';
 import { CreateJobDto } from './create-job.dto';
 
 export class UpdateJobDto extends PartialType(CreateJobDto) {

@@ -33,7 +33,8 @@ export class AuthController {
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Connect crypto wallet to freelancer profile',
-    description: 'Connects a cryptocurrency wallet address to the user profile. This is a one-time operation and cannot be modified once set.',
+    description:
+      'Connects a cryptocurrency wallet address to the user profile. This is a one-time operation and cannot be modified once set.',
   })
   @ApiResponse({
     status: 200,
@@ -80,7 +81,8 @@ export class AuthController {
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get wallet information',
-    description: 'Retrieves the current wallet information for the authenticated user',
+    description:
+      'Retrieves the current wallet information for the authenticated user',
   })
   @ApiResponse({
     status: 200,
@@ -89,7 +91,11 @@ export class AuthController {
       type: 'object',
       properties: {
         walletAddress: { type: 'string', nullable: true },
-        walletConnectedAt: { type: 'string', format: 'date-time', nullable: true },
+        walletConnectedAt: {
+          type: 'string',
+          format: 'date-time',
+          nullable: true,
+        },
         isWalletConnected: { type: 'boolean' },
         canModifyWallet: { type: 'boolean' },
       },

@@ -1,5 +1,5 @@
 export enum TeamMemberStatus {
-  ACTIVE = "active",
-  PENDING = "pending",
-  INACTIVE = "inactive",
+  ACTIVE = 'active',
+  PENDING = 'pending',
+  INACTIVE = 'inactive',
 }

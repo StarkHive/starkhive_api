@@ -30,19 +30,19 @@ export class User {
   role: string;
 
   // Crypto wallet field - unique and immutable after first save
-  @Column({ 
-    nullable: true, 
+  @Column({
+    nullable: true,
     unique: true,
     name: 'wallet_address',
-    comment: 'Cryptocurrency wallet address - read-only after initial save'
+    comment: 'Cryptocurrency wallet address - read-only after initial save',
   })
   @Index('idx_wallet_address', { unique: true })
   walletAddress: string | null;
 
-  @Column({ 
+  @Column({
     nullable: true,
     name: 'wallet_connected_at',
-    comment: 'Timestamp when wallet was first connected'
+    comment: 'Timestamp when wallet was first connected',
   })
   walletConnectedAt: Date | null;
 

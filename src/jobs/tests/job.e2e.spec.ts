@@ -40,7 +40,8 @@ describe('Job + Anti-Spam (e2e)', () => {
 
   const normalJob = {
     title: 'Frontend Developer',
-    description: 'We are looking for a React developer with 2+ years of experience.',
+    description:
+      'We are looking for a React developer with 2+ years of experience.',
     company: 'LegitTech',
   };
 

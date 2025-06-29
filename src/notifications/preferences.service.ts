@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Preferences } from './entities/preferences.entity';
 import { Repository } from 'typeorm';
@@ -23,7 +27,9 @@ export class PreferencesService {
   ) {}
 
   async findByUser(user: User): Promise<Preferences | null> {
-    return this.preferencesRepository.findOne({ where: { user: { id: user.id } } });
+    return this.preferencesRepository.findOne({
+      where: { user: { id: user.id } },
+    });
   }
 
   async create(user: User, dto: CreatePreferencesDto): Promise<Preferences> {

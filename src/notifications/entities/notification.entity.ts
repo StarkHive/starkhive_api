@@ -8,7 +8,7 @@ import {
   JoinColumn,
   Index,
 } from 'typeorm';
-import { User } from 'src/auth/entities/user.entity'; 
+import { User } from 'src/auth/entities/user.entity';
 export enum NotificationType {
   JOB_APPLICATION = 'job_application',
   MESSAGE = 'message',
@@ -16,7 +16,7 @@ export enum NotificationType {
   PAYMENT = 'payment',
   SYSTEM = 'system',
   GENERAL = 'general',
-  JOB_STATUS_UPDATE = "JOB_STATUS_UPDATE",
+  JOB_STATUS_UPDATE = 'JOB_STATUS_UPDATE',
 }
 
 @Entity('notifications')

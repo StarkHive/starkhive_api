@@ -28,17 +28,21 @@ export class ApplicationsService {
    * @throws ConflictException if duplicate application exists
    */
   async applyForJob(
-    jobId: string,
+    jobId: number,
     freelancerId: string,
     recruiterId: string,
     coverLetter: string,
   ): Promise<Application> {
     if (!jobId || !freelancerId || !recruiterId || !coverLetter) {
-      throw new ConflictException('All parameters (jobId, freelancerId, recruiterId, coverLetter) are required');
+      throw new ConflictException(
+        'All parameters (jobId, freelancerId, recruiterId, coverLetter) are required',
+      );
     }
 
     // Duplicate check
-    const existing = await this.applicationRepository.findOne({ where: { jobId, freelancerId } });
+    const existing = await this.applicationRepository.findOne({
+      where: { jobId, freelancerId },
+    });
     if (existing) {
       throw new ConflictException('You have already applied to this job.');
     }
@@ -60,15 +64,19 @@ export class ApplicationsService {
       // Send notification to recruiter
       const notificationPayload: NotificationPayload = {
         recruiterId,
-        jobId,
+        jobId: jobId.toString(),
         freelancerId,
         jobLink,
         freelancerProfileLink,
       };
       await this.notificationsService.sendNotification(notificationPayload);
     } catch (error) {
+
+      // Log error but don't fail the application creation
+
      
       console.error(`Failed to send notification for application ${application.id}:`, error);
+
     }
 
     return application;
@@ -88,17 +96,20 @@ export class ApplicationsService {
       where: { id: jobId },
       relations: ['recruiter'],
     });
-  
+
     if (!job || job.recruiterId) {
-      throw new ForbiddenException('You are not authorized to view these applications.');
+      throw new ForbiddenException(
+        'You are not authorized to view these applications.',
+      );
     }
-  
+
     // Fetch applications with freelancer info
     return this.applicationRepository.find({
       where: { job: { id: jobId } },
       relations: ['freelancer'],
     });
   }
+
   
   /**
    * Get applications for a freelancer with job relations
@@ -141,4 +152,5 @@ export class ApplicationsService {
 
     return app;
   }
+
 }

@@ -1,8 +1,15 @@
 import { User } from 'src/auth/entities/user.entity';
 import { JobStatus } from 'src/feed/enums/job-status.enum';
 import { Job } from 'src/jobs/entities/job.entity';
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, Unique, ManyToOne } from 'typeorm';
-import { BaseEntity } from 'typeorm'
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  Unique,
+  ManyToOne,
+  BaseEntity,
+} from 'typeorm';
 
 export enum ApplicationStatus {
   SUBMITTED = 'submitted',
@@ -19,7 +26,7 @@ export class Application extends BaseEntity {
   id: string;
 
   @Column()
-  jobId: string;
+  jobId: number;
 
   @Column()
   freelancerId: string;
@@ -44,7 +51,11 @@ export class Application extends BaseEntity {
   status: ApplicationStatus;
 
   @Column('jsonb', { default: [] })
-  statusHistory: { status: ApplicationStatus; updatedAt: Date; updatedBy?: string }[];
+  statusHistory: {
+    status: ApplicationStatus;
+    updatedAt: Date;
+    updatedBy?: string;
+  }[];
 
   @Column('text')
   coverLetter: string;

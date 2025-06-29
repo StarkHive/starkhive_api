@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Message } from './entities/message.entity';
@@ -11,7 +16,10 @@ export class MessagingService {
     private messageRepository: Repository<Message>,
   ) {}
 
-  async create(senderId: string, createMessageDto: CreateMessageDto): Promise<Message> {
+  async create(
+    senderId: string,
+    createMessageDto: CreateMessageDto,
+  ): Promise<Message> {
     if (senderId === createMessageDto.receiverId) {
       throw new BadRequestException('Cannot send message to yourself');
     }
@@ -28,12 +36,13 @@ export class MessagingService {
     return await this.messageRepository.find();
   }
 
-  async findUserMessages(userId: string, page: number = 1, limit: number = 20): Promise<{ messages: Message[]; total: number }> {
+  async findUserMessages(
+    userId: string,
+    page: number = 1,
+    limit: number = 20,
+  ): Promise<{ messages: Message[]; total: number }> {
     const [messages, total] = await this.messageRepository.findAndCount({
-      where: [
-        { senderId: userId },
-        { receiverId: userId },
-      ],
+      where: [{ senderId: userId }, { receiverId: userId }],
       order: {
         createdAt: 'DESC',
       },
@@ -51,7 +60,9 @@ export class MessagingService {
     }
 
     if (message.senderId !== userId && message.receiverId !== userId) {
-      throw new ForbiddenException('You do not have permission to access this message');
+      throw new ForbiddenException(
+        'You do not have permission to access this message',
+      );
     }
 
     return message;
@@ -59,12 +70,14 @@ export class MessagingService {
 
   async markAsRead(id: string, userId: string): Promise<Message> {
     const message = await this.findOne(id, userId);
-    
+
     if (message.receiverId !== userId) {
-      throw new ForbiddenException('Only the message recipient can mark it as read');
+      throw new ForbiddenException(
+        'Only the message recipient can mark it as read',
+      );
     }
 
     message.isRead = true;
     return await this.messageRepository.save(message);
   }
-} 
+}

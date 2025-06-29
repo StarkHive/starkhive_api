@@ -1,16 +1,16 @@
-import { MigrationInterface, QueryRunner } from "typeorm";
+import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class CreateReportsTable1749400212991 implements MigrationInterface {
-    name = 'CreateReportsTable1749400212991'
+  name = 'CreateReportsTable1749400212991';
 
-    public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`
             CREATE TYPE "public"."reports_status_enum" AS ENUM('pending', 'under_review', 'resolved', 'rejected')
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TYPE "public"."reports_type_enum" AS ENUM('post', 'user', 'job', 'comment', 'other')
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE "reports" (
                 "id" SERIAL PRIMARY KEY,
                 "type" "public"."reports_type_enum" NOT NULL,
@@ -26,19 +26,21 @@ export class CreateReportsTable1749400212991 implements MigrationInterface {
                 "deletedAt" TIMESTAMP
             )
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             ALTER TABLE "reports" 
             ADD CONSTRAINT "FK_reports_reporter" 
             FOREIGN KEY ("reporterId") 
             REFERENCES "users"("id") 
             ON DELETE CASCADE
         `);
-    }
+  }
 
-    public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`ALTER TABLE "reports" DROP CONSTRAINT "FK_reports_reporter"`);
-        await queryRunner.query(`DROP TABLE "reports"`);
-        await queryRunner.query(`DROP TYPE "public"."reports_status_enum"`);
-        await queryRunner.query(`DROP TYPE "public"."reports_type_enum"`);
-    }
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(
+      `ALTER TABLE "reports" DROP CONSTRAINT "FK_reports_reporter"`,
+    );
+    await queryRunner.query(`DROP TABLE "reports"`);
+    await queryRunner.query(`DROP TYPE "public"."reports_status_enum"`);
+    await queryRunner.query(`DROP TYPE "public"."reports_type_enum"`);
+  }
 }

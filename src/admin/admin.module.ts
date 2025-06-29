@@ -13,12 +13,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      User,
-      Post,
-      Job,
-      Report,
-    ]),
+    TypeOrmModule.forFeature([User, Post, Job, Report]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
@@ -29,11 +24,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
     }),
   ],
   controllers: [AdminController],
-  providers: [
-    AdminService,
-    JwtAuthGuard,
-    RolesGuard,
-  ],
+  providers: [AdminService, JwtAuthGuard, RolesGuard],
   exports: [AdminService],
 })
 export class AdminModule {}

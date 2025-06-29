@@ -42,6 +42,12 @@ dotenv.config();
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
+        type: 'postgres', // Force postgres, no fallback to sqlite
+        host: configService.get<string>('DB_HOST'),
+        port: Number.parseInt(
+          configService.get<string>('DB_PORT') || '5432',
+          10,
+        ), // default postgres port
         type: 'postgres',
         host: configService.get<string>('DB_HOST'),
         port: Number.parseInt(configService.get<string>('DB_PORT') || '5432', 10),

@@ -4,5 +4,4 @@ export enum JobStatus {
   APPROVED = 'approved',
   REJECTED = 'rejected',
   INPROGRESS = 'in_progress',
-  }
-  
+}

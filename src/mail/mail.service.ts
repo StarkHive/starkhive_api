@@ -23,7 +23,10 @@ export class MailService {
     const secure = this.configService.get<boolean>('SMTP_SECURE', false);
     const user = this.configService.get<string>('SMTP_USER');
     const pass = this.configService.get<string>('SMTP_PASSWORD');
-    const from = this.configService.get<string>('SMTP_FROM', 'noreply@starkhive.com');
+    const from = this.configService.get<string>(
+      'SMTP_FROM',
+      'noreply@starkhive.com',
+    );
 
     this.transporter = nodemailer.createTransport({
       host,
@@ -65,7 +68,10 @@ export class MailService {
   }
 
   // Helper method to send verification email
-  async sendVerificationEmail(email: string, verificationUrl: string): Promise<boolean> {
+  async sendVerificationEmail(
+    email: string,
+    verificationUrl: string,
+  ): Promise<boolean> {
     const subject = 'Verify your email address';
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">

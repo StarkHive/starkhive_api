@@ -21,12 +21,14 @@ export class AdminService {
   ) {}
 
   async getDashboardStats(): Promise<DashboardStatsDto> {
-    const [totalUsers, totalPosts, totalJobs, totalReports] = await Promise.all([
-      this.userRepository.count(),
-      this.postRepository.count(),
-      this.jobRepository.count({ where: { deletedAt: null } as any }), // Type assertion to fix type error
-      this.reportRepository.count(),
-    ]);
+    const [totalUsers, totalPosts, totalJobs, totalReports] = await Promise.all(
+      [
+        this.userRepository.count(),
+        this.postRepository.count(),
+        this.jobRepository.count({ where: { deletedAt: null } as any }), // Type assertion to fix type error
+        this.reportRepository.count(),
+      ],
+    );
 
     return {
       totalUsers,

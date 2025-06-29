@@ -3,7 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, QueryFailedError } from 'typeorm';
 import { User } from './entities/user.entity';
 import { ConnectWalletDto } from './connect-wallet.dto';
-import { WalletAddressAlreadyExistsException, WalletAlreadyConnectedException } from './entities/exceptions/wallet.exceptions';
+import {
+  WalletAddressAlreadyExistsException,
+  WalletAlreadyConnectedException,
+} from './entities/exceptions/wallet.exceptions';
 @Injectable()
 export class AuthService {
   constructor(
@@ -25,7 +28,7 @@ export class AuthService {
   ): Promise<Omit<User, 'password'>> {
     // Find the user
     const user = await this.userRepository.findOne({ where: { id: userId } });
-    
+
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -36,7 +39,8 @@ export class AuthService {
     }
 
     // Normalize wallet address to lowercase for consistency
-    const normalizedWalletAddress = connectWalletDto.walletAddress.toLowerCase();
+    const normalizedWalletAddress =
+      connectWalletDto.walletAddress.toLowerCase();
 
     try {
       // Update user with wallet information
@@ -53,10 +57,12 @@ export class AuthService {
         isWalletConnected: updatedUser.isWalletConnected,
         canModifyWallet: updatedUser.canModifyWallet,
       };
-      
     } catch (error) {
       // Handle unique constraint violation
-      if (error instanceof QueryFailedError && error.message.includes('duplicate')) {
+      if (
+        error instanceof QueryFailedError &&
+        error.message.includes('duplicate')
+      ) {
         throw new WalletAddressAlreadyExistsException();
       }
       throw error;
@@ -74,9 +80,9 @@ export class AuthService {
     isWalletConnected: boolean;
     canModifyWallet: boolean;
   }> {
-    const user = await this.userRepository.findOne({ 
+    const user = await this.userRepository.findOne({
       where: { id: userId },
-      select: ['id', 'walletAddress', 'walletConnectedAt']
+      select: ['id', 'walletAddress', 'walletConnectedAt'],
     });
 
     if (!user) {

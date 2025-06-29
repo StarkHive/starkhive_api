@@ -1,3 +1,15 @@
+import {
+  Body,
+  Controller,
+  Post,
+  Request,
+  UseGuards,
+  ConflictException,
+  Get,
+  Param,
+  ParseIntPipe,
+  Req,
+} from '@nestjs/common';
 import { Body, Controller, Post, Request, UseGuards, ConflictException, Get, Param, ParseIntPipe, Req, Patch } from '@nestjs/common';
 import { ApplicationsService } from './applications.service';
 import { ApplyJobDto } from './dto/apply-job.dto';
@@ -35,7 +47,9 @@ export class ApplicationsController {
   @Get('my')
   @Roles(UserRole.FREELANCER)
   async getMyApplications(@GetUser() user: User) {
-    const applications = await this.applicationsService.getApplicationsByUser(user.id);
+    const applications = await this.applicationsService.getApplicationsByUser(
+      user.id,
+    );
 
     return applications.map((app) => ({
       jobTitle: app.job.title,
@@ -54,13 +68,10 @@ updateStatus(
 
 
   @Get('job/:jobId')
-@UseGuards(JwtAuthGuard)
-async getApplicationsByJob(
-  @Param('jobId') jobId: number,
-  @Req() req: any,
-) {
-  const recruiterId = req.user.id;
-  return this.applicationsService.findApplicationsByJobId(jobId, recruiterId);
-}
+  @UseGuards(JwtAuthGuard)
+  async getApplicationsByJob(@Param('jobId') jobId: number, @Req() req: any) {
+    const recruiterId = req.user.id;
+    return this.applicationsService.findApplicationsByJobId(jobId, recruiterId);
+  }
 }
 

@@ -9,7 +9,13 @@ import {
 } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiTags, ApiOperation, ApiResponse, ApiQuery, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiQuery,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 
 @ApiTags('notifications')
 @Controller('notifications')
@@ -72,6 +78,10 @@ export class NotificationsController {
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
   ) {
     const userId = req.user.sub || req.user.id;
-    return this.notificationsService.getNotificationsByUser(userId, page, limit);
+    return this.notificationsService.getNotificationsByUser(
+      userId,
+      page,
+      limit,
+    );
   }
 }

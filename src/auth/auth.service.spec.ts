@@ -5,7 +5,6 @@ import { User } from './entities/user.entity';
 import { PasswordReset } from './entities/password-reset.entity';
 import { JwtService } from '@nestjs/jwt';
 
-
 describe('AuthService', () => {
   let service: AuthService;
 

@@ -1,5 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from "typeorm";
-import { JobStatus } from "../enums/job-status.enum";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+} from 'typeorm';
+import { JobStatus } from '../enums/job-status.enum';
 
 @Entity('feed_posts')
 export class FeedPost {
@@ -14,9 +19,9 @@ export class FeedPost {
 
   @Column()
   authorId: number;
-  
+
   @Column({ type: 'enum', enum: JobStatus, default: JobStatus.APPROVED })
-  status:JobStatus
+  status: JobStatus;
 
   @CreateDateColumn()
   createdAt: Date;

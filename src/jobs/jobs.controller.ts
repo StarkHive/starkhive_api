@@ -1,4 +1,3 @@
-
 import {
   Controller,
   Post,
@@ -6,75 +5,80 @@ import {
   Get,
   Param,
   Patch,
-  Request,
   Delete,
+  Request,
+  Query,
+  UseGuards,
+  UnauthorizedException,
   ParseIntPipe,
 } from '@nestjs/common';
 import { JobsService } from './jobs.service';
+import { RecommendationService } from './recommendation.service';
 import { UpdateJobStatusDto } from './dto/update-status.dto';
 import { CreateJobDto } from './dto/create-job.dto';
 import { UpdateJobDto } from './dto/update-job.dto';
-import { Request as ExpressRequest } from 'express';
+import {
+  GetRecommendationsDto,
+  UpdateRecommendationActionDto,
+  RecommendationMetricsDto,
+} from './dto/recommendation.dto';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import { User } from 'src/auth/entities/user.entity';
+import { AuthGuardGuard } from '../auth/guards/auth.guard';
 
-// Extend Express Request with user property
-interface RequestWithUser extends ExpressRequest {
-  user?: {
-    id: string;
-  };
-}
+@Controller('jobs')
+export class JobsController {
+  constructor(
+    private readonly jobsService: JobsService,
+    private readonly recommendationService: RecommendationService,
+  ) {}
 
-// @Controller('jobs')
-// export class JobsController {
-//   constructor(private readonly jobsService: JobsService) {}
-
-//   @Post()
-//   create(@Body() createJobDto: CreateJobDto) {
-//     return this.jobsService.createJob(createJobDto);
-//   }
-
-//   @Get()
-//   findAll() {
-//     return this.jobsService.findAllJobs();
-//   }
-
-  @Get('saved')
-  async getSavedJobs(@GetUser() user: User) {
-    return this.jobsService.getSavedJobs(user.id);
+  // Create a job
+  @Post()
+  @UseGuards(AuthGuardGuard)
+  createJob(@Body() createJobDto: CreateJobDto, @GetUser() user: User) {
+    return this.jobsService.createJob(createJobDto, user.id);
   }
 
+  // Get all jobs
+  @Get()
+  findAllJobs() {
+    return this.jobsService.findAllJobs();
+  }
+
+  // Get a single job by ID
   @Get(':id')
-  async getById(@Param('id') id: number) {
+  findJobById(@Param('id', ParseIntPipe) id: number) {
     return this.jobsService.findJobById(id);
   }
 
-  @Get(':id/saved')
-  async isJobSaved(@Param('id') id: number, @GetUser() user: User) {
-    return this.jobsService.isJobSaved(id, user.id);
-  }
-
+  // Update a job
   @Patch(':id')
-  async updateJob(
-    @Param('id') id: number,
+  @UseGuards(AuthGuardGuard)
+  updateJob(
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateJobDto: UpdateJobDto,
     @GetUser() user: User,
   ) {
     return this.jobsService.updateJob(id, updateJobDto, user.id);
   }
 
+  // Update job status
   @Patch(':id/status')
-  async updateStatus(
-    @Param('id') id: number,
+  @UseGuards(AuthGuardGuard)
+  updateJobStatus(
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateStatusDto: UpdateJobStatusDto,
     @GetUser() user: User,
   ) {
     return this.jobsService.updateJobStatus(id, updateStatusDto, user.id);
   }
 
+  // Toggle job accepting applications
   @Patch(':id/toggle-applications')
-  async toggleAcceptingApplications(
-    @Param('id') id: number,
+  @UseGuards(AuthGuardGuard)
+  toggleAcceptingApplications(
+    @Param('id', ParseIntPipe) id: number,
     @Body('isAcceptingApplications') isAcceptingApplications: boolean,
     @GetUser() user: User,
   ) {
@@ -85,25 +89,87 @@ interface RequestWithUser extends ExpressRequest {
     );
   }
 
+  // Delete a job
+  @Delete(':id')
+  @UseGuards(AuthGuardGuard)
+  removeJob(
+    @Param('id', ParseIntPipe) id: number,
+    @GetUser() user: User,
+  ) {
+    return this.jobsService.removeJob(id, user.id);
+  }
+
+  // Restore a deleted job
+  @Post(':id/restore')
+  @UseGuards(AuthGuardGuard)
+  restoreJob(
+    @Param('id', ParseIntPipe) id: number,
+    @GetUser() user: User,
+  ) {
+    return this.jobsService.restoreJob(id, user.id);
+  }
+
+  // Save/Unsave job
   @Post(':id/save')
-  async toggleSaveJob(@Param('id') id: number, @GetUser() user: User) {
+  @UseGuards(AuthGuardGuard)
+  toggleSaveJob(
+    @Param('id', ParseIntPipe) id: number,
+    @GetUser() user: User,
+  ) {
     return this.jobsService.toggleSaveJob(id, user.id);
   }
 
-  @Post(':id/restore')
-  async restoreJob(
-    @Param('id', ParseIntPipe) id: number, // Job ID is integer
+  // Check if job is saved
+  @Get(':id/saved')
+  @UseGuards(AuthGuardGuard)
+  isJobSaved(
+    @Param('id', ParseIntPipe) id: number,
     @GetUser() user: User,
   ) {
-    return this.jobsService.restoreJob(id, user.id); // user.id is string UUID
+    return this.jobsService.isJobSaved(id, user.id);
   }
 
-  @Delete(':id')
-  async removeJob(
-    @Param('id', ParseIntPipe) id: number, // Job ID is integer
+  // Get all saved jobs
+  @Get('saved')
+  @UseGuards(AuthGuardGuard)
+  getSavedJobs(@GetUser() user: User) {
+    return this.jobsService.getSavedJobs(user.id);
+  }
+
+  // Get job recommendations
+  @Get('recommendations')
+  @UseGuards(AuthGuardGuard)
+  getRecommendations(
+    @Query() query: GetRecommendationsDto,
     @GetUser() user: User,
   ) {
-    return this.jobsService.removeJob(id, user.id); // user.id is string UUID
+    return this.recommendationService.generateRecommendations(
+      user.id,
+      query,
+    );
+  }
+
+  // Get recommendation metrics
+  @Get('recommendations/metrics')
+  @UseGuards(AuthGuardGuard)
+  getRecommendationMetrics(
+    @GetUser() user: User,
+  ): Promise<RecommendationMetricsDto> {
+    return this.recommendationService.getRecommendationMetrics(user.id);
+  }
+
+  // Update recommendation interaction (e.g., like/dislike)
+  @Patch('recommendations/:id/action')
+  @UseGuards(AuthGuardGuard)
+  updateRecommendationAction(
+    @Param('id') recommendationId: string,
+    @Body() action: UpdateRecommendationActionDto,
+    @GetUser() user: User,
+  ) {
+    return this.recommendationService.updateRecommendationAction(
+      recommendationId,
+      action,
+      user.id,
+    );
   }
 }
-

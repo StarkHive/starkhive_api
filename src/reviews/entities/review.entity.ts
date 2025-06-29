@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, Unique } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  CreateDateColumn,
+  Unique,
+} from 'typeorm';
 import { User } from 'src/auth/entities/user.entity';
 import { Job } from 'src/jobs/entities/job.entity';
 
@@ -14,10 +21,13 @@ export class Review {
   @Column({ type: 'text' })
   comment: string;
 
-  @ManyToOne(() => User, user => user.id, { eager: true, onDelete: 'CASCADE' })
+  @ManyToOne(() => User, (user) => user.id, {
+    eager: true,
+    onDelete: 'CASCADE',
+  })
   recruiter: User;
 
-  @ManyToOne(() => Job, job => job.id, { eager: true, onDelete: 'CASCADE' })
+  @ManyToOne(() => Job, (job) => job.id, { eager: true, onDelete: 'CASCADE' })
   job: Job;
 
   @CreateDateColumn()

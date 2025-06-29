@@ -6,6 +6,9 @@ import {
 } from '@nestjs/common';
 import { UserRole } from './enums/userRole.enum';
 import type { Repository } from 'typeorm';
+import type { User } from './entities/user.entity';
+import type { Portfolio } from './entities/portfolio.entity';
+import type { EmailToken } from './entities/email-token.entity';
 import { User } from './entities/user.entity';
 import { Portfolio } from './entities/portfolio.entity';
 import { EmailToken } from './entities/email-token.entity';
@@ -15,6 +18,7 @@ import type { CreatePortfolioDto } from './dto/create-portfolio.dto';
 import type { JwtService } from '@nestjs/jwt';
 import { addHours } from 'date-fns';
 import * as crypto from 'crypto';
+import type { PasswordReset } from './entities/password-reset.entity';
 import { PasswordReset } from './entities/password-reset.entity';
 import type { MailService } from '../mail/mail.service';
 import type { ConfigService } from '@nestjs/config';
@@ -22,6 +26,7 @@ import type { LogInDto } from './dto/loginDto';
 import type { LogInProvider } from './providers/loginProvider';
 import type { TeamService } from './services/team.service';
 import { InjectRepository } from '@nestjs/typeorm';
+
 
 @Injectable()
 export class AuthService {

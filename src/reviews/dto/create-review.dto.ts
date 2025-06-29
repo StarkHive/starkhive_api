@@ -8,7 +8,10 @@ export class CreateReviewDto {
   @Max(5)
   rating: number;
 
-  @ApiProperty({ description: 'Review comment', example: 'Great work and communication!' })
+  @ApiProperty({
+    description: 'Review comment',
+    example: 'Great work and communication!',
+  })
   @IsString()
   @IsNotEmpty()
   comment: string;

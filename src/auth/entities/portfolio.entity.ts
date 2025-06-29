@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { User } from './user.entity';
 
 @Entity()
@@ -15,7 +22,7 @@ export class Portfolio {
   @Column()
   fileUrl: string;
 
-  @ManyToOne(() => User, user => user.portfolios, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, (user) => user.portfolios, { onDelete: 'CASCADE' })
   user: User;
 
   @CreateDateColumn()

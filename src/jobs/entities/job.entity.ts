@@ -1,7 +1,6 @@
 import { Application } from 'src/applications/entities/application.entity';
 import { User } from 'src/auth/entities/user.entity';
 import { JobStatus } from 'src/feed/enums/job-status.enum';
-
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -84,6 +83,9 @@ export class Job {
 
   @Column({ default: false })
   isApproved: boolean;
+
+  @Column({ default: false })
+  isRemote: boolean;
 
   @Column({ nullable: true })
   approvedById?: string;

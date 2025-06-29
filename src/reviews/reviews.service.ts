@@ -1,4 +1,8 @@
-import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Review } from './entities/review.entity';
@@ -16,10 +20,15 @@ export class ReviewsService {
   ) {}
 
   async createReview(recruiter: User, dto: CreateReviewDto): Promise<Review> {
-    const job = await this.jobRepository.findOne({ where: { id: Number(dto.jobId) } });
+    const job = await this.jobRepository.findOne({
+      where: { id: Number(dto.jobId) },
+    });
     if (!job) throw new NotFoundException('Job not found');
-    const existing = await this.reviewRepository.findOne({ where: { recruiter: { id: recruiter.id }, job: { id: job.id } } });
-    if (existing) throw new ConflictException('You have already reviewed this job');
+    const existing = await this.reviewRepository.findOne({
+      where: { recruiter: { id: recruiter.id }, job: { id: job.id } },
+    });
+    if (existing)
+      throw new ConflictException('You have already reviewed this job');
     const review = this.reviewRepository.create({
       rating: dto.rating,
       comment: dto.comment,

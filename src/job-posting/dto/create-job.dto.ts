@@ -12,112 +12,112 @@ import {
   Min,
   Length,
   ArrayMaxSize,
-} from "class-validator"
-import { Transform, Type } from "class-transformer"
-import { JobType, JobStatus, ExperienceLevel } from "../entities/job.entity"
+} from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import { JobType, JobStatus, ExperienceLevel } from '../entities/job.entity';
 
 export class CreateJobDto {
   @IsString()
   @IsNotEmpty()
   @Length(1, 200)
-  title: string
+  title: string;
 
   @IsString()
   @IsNotEmpty()
-  description: string
-
-  @IsString()
-  @IsNotEmpty()
-  @Length(1, 100)
-  company: string
+  description: string;
 
   @IsString()
   @IsNotEmpty()
   @Length(1, 100)
-  location: string
+  company: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @Length(1, 100)
+  location: string;
 
   @IsEnum(JobType)
   @IsOptional()
-  jobType?: JobType = JobType.FULL_TIME
+  jobType?: JobType = JobType.FULL_TIME;
 
   @IsEnum(JobStatus)
   @IsOptional()
-  status?: JobStatus = JobStatus.ACTIVE
+  status?: JobStatus = JobStatus.ACTIVE;
 
   @IsEnum(ExperienceLevel)
   @IsOptional()
-  experienceLevel?: ExperienceLevel = ExperienceLevel.MID
+  experienceLevel?: ExperienceLevel = ExperienceLevel.MID;
 
   @IsNumber()
   @IsOptional()
   @Min(0)
   @Type(() => Number)
-  salaryMin?: number
+  salaryMin?: number;
 
   @IsNumber()
   @IsOptional()
   @Min(0)
   @Type(() => Number)
-  salaryMax?: number
+  salaryMax?: number;
 
   @IsString()
   @IsOptional()
   @Length(1, 10)
-  salaryCurrency?: string
+  salaryCurrency?: string;
 
   @IsArray()
   @IsString({ each: true })
   @IsOptional()
   @ArrayMaxSize(20)
   @Transform(({ value }) => (Array.isArray(value) ? value : []))
-  requirements?: string[] = []
+  requirements?: string[] = [];
 
   @IsArray()
   @IsString({ each: true })
   @IsOptional()
   @ArrayMaxSize(20)
   @Transform(({ value }) => (Array.isArray(value) ? value : []))
-  responsibilities?: string[] = []
+  responsibilities?: string[] = [];
 
   @IsArray()
   @IsString({ each: true })
   @IsOptional()
   @ArrayMaxSize(15)
   @Transform(({ value }) => (Array.isArray(value) ? value : []))
-  benefits?: string[] = []
+  benefits?: string[] = [];
 
   @IsArray()
   @IsString({ each: true })
   @IsOptional()
   @ArrayMaxSize(30)
   @Transform(({ value }) => (Array.isArray(value) ? value : []))
-  skills?: string[] = []
+  skills?: string[] = [];
 
   @IsEmail()
   @IsOptional()
   @Length(1, 100)
-  contactEmail?: string
+  contactEmail?: string;
 
   @IsPhoneNumber()
   @IsOptional()
-  contactPhone?: string
+  contactPhone?: string;
 
   @IsDateString()
   @IsOptional()
-  applicationDeadline?: string
+  applicationDeadline?: string;
 
   @IsBoolean()
   @IsOptional()
-  @Transform(({ value }) => value === "true" || value === true)
-  isRemote?: boolean = false
+  @Transform(({ value }) => value === 'true' || value === true)
+  isRemote?: boolean = false;
 
   @IsBoolean()
   @IsOptional()
-  @Transform(({ value }) => value === "true" || value === true)
-  isUrgent?: boolean = false
+  @Transform(({ value }) => value === 'true' || value === true)
+  isUrgent?: boolean = false;
 
   @IsBoolean()
   @IsOptional()
-  @Transform(({ value }) => value === "true" || value === true)
-  isFeatured?: boolean = false
+  @Transform(({ value }) => value === 'true' || value === true)
+  isFeatured?: boolean = false;
 }

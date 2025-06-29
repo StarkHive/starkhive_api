@@ -30,9 +30,11 @@ export class NotificationsService {
       this.logger.log(`Freelancer applied for job.`);
       this.logger.log(`Job link: ${payload.jobLink}`);
       this.logger.log(`Freelancer profile: ${payload.freelancerProfileLink}`);
-      
     } catch (error) {
-      this.logger.error(`Failed to send notification: ${error.message}`, error.stack);
+      this.logger.error(
+        `Failed to send notification: ${error.message}`,
+        error.stack,
+      );
       throw new Error('Failed to send notification');
     }
   }
@@ -58,19 +60,24 @@ export class NotificationsService {
     await this.notificationRepository.save(notification);
   }
 
-  async getNotificationsByUser(userId: string, page: number = 1, limit: number = 10) {
+  async getNotificationsByUser(
+    userId: string,
+    page: number = 1,
+    limit: number = 10,
+  ) {
     if (page < 1) page = 1;
     if (limit < 1) limit = 10;
     if (limit > 100) limit = 100;
     const skip = (page - 1) * limit;
 
     try {
-      const [notifications, total] = await this.notificationRepository.findAndCount({
-        where: { userId },
-        order: { createdAt: 'DESC' },
-        skip,
-        take: limit,
-      });
+      const [notifications, total] =
+        await this.notificationRepository.findAndCount({
+          where: { userId },
+          order: { createdAt: 'DESC' },
+          skip,
+          take: limit,
+        });
 
       const totalPages = Math.ceil(total / limit);
       const hasNextPage = page < totalPages;

@@ -1,118 +1,118 @@
-import { ApiProperty } from "@nestjs/swagger"
-import { Type } from "class-transformer"
+import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 
 class UserInfoDto {
   @ApiProperty({
-    description: "User ID",
-    example: "123e4567-e89b-12d3-a456-426614174000",
+    description: 'User ID',
+    example: '123e4567-e89b-12d3-a456-426614174000',
   })
-  id: string
+  id: string;
 
   @ApiProperty({
-    description: "User email",
-    example: "user@example.com",
+    description: 'User email',
+    example: 'user@example.com',
   })
-  email: string
+  email: string;
 }
 
 class MessageMetaDto {
   @ApiProperty({
-    description: "Total number of messages",
+    description: 'Total number of messages',
     example: 42,
   })
-  total: number
+  total: number;
 
   @ApiProperty({
-    description: "Current page number",
+    description: 'Current page number',
     example: 1,
   })
-  page: number
+  page: number;
 
   @ApiProperty({
-    description: "Number of messages per page",
+    description: 'Number of messages per page',
     example: 20,
   })
-  limit: number
+  limit: number;
 
   @ApiProperty({
-    description: "Total number of pages",
+    description: 'Total number of pages',
     example: 3,
   })
-  totalPages: number
+  totalPages: number;
 
   @ApiProperty({
-    description: "Number of unread messages in the conversation",
+    description: 'Number of unread messages in the conversation',
     example: 5,
   })
-  unreadCount: number
+  unreadCount: number;
 
   @ApiProperty({
-    description: "Information about the other participant",
+    description: 'Information about the other participant',
     type: UserInfoDto,
   })
   @Type(() => UserInfoDto)
-  participant: UserInfoDto
+  participant: UserInfoDto;
 
   @ApiProperty({
-    description: "Current sort order",
-    enum: ["ASC", "DESC"],
-    example: "DESC",
+    description: 'Current sort order',
+    enum: ['ASC', 'DESC'],
+    example: 'DESC',
   })
-  sortOrder: "ASC" | "DESC"
+  sortOrder: 'ASC' | 'DESC';
 }
 
 export class MessageResponseDto {
   @ApiProperty({
-    description: "Unique identifier for the message",
-    example: "123e4567-e89b-12d3-a456-426614174000",
+    description: 'Unique identifier for the message',
+    example: '123e4567-e89b-12d3-a456-426614174000',
   })
-  id: string
+  id: string;
 
   @ApiProperty({
-    description: "The content of the message",
-    example: "Hello, I would like to discuss your project proposal.",
+    description: 'The content of the message',
+    example: 'Hello, I would like to discuss your project proposal.',
   })
-  content: string
+  content: string;
 
   @ApiProperty({
-    description: "Information about the sender",
+    description: 'Information about the sender',
     type: UserInfoDto,
   })
   @Type(() => UserInfoDto)
-  sender: UserInfoDto
+  sender: UserInfoDto;
 
   @ApiProperty({
-    description: "Information about the recipient",
+    description: 'Information about the recipient',
     type: UserInfoDto,
   })
   @Type(() => UserInfoDto)
-  recipient: UserInfoDto
+  recipient: UserInfoDto;
 
   @ApiProperty({
-    description: "Whether the message has been read",
+    description: 'Whether the message has been read',
     example: false,
   })
-  isRead: boolean
+  isRead: boolean;
 
   @ApiProperty({
-    description: "When the message was sent",
-    example: "2023-06-01T12:00:00Z",
+    description: 'When the message was sent',
+    example: '2023-06-01T12:00:00Z',
   })
-  createdAt: Date
+  createdAt: Date;
 }
 
 export class ConversationResponseDto {
   @ApiProperty({
-    description: "List of messages",
+    description: 'List of messages',
     type: [MessageResponseDto],
   })
   @Type(() => MessageResponseDto)
-  data: MessageResponseDto[]
+  data: MessageResponseDto[];
 
   @ApiProperty({
-    description: "Metadata about the conversation and pagination",
+    description: 'Metadata about the conversation and pagination',
     type: MessageMetaDto,
   })
   @Type(() => MessageMetaDto)
-  meta: MessageMetaDto
+  meta: MessageMetaDto;
 }

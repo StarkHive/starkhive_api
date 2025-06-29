@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { Post } from '../../post/entities/post.entity';
 import { User } from 'src/auth/entities/user.entity';
 
@@ -20,4 +27,4 @@ export class Report {
 
   @CreateDateColumn()
   createdAt: Date;
-} 
+}

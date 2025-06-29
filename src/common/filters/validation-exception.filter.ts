@@ -1,4 +1,9 @@
-import { ExceptionFilter, Catch, ArgumentsHost, HttpStatus } from '@nestjs/common';
+import {
+  ExceptionFilter,
+  Catch,
+  ArgumentsHost,
+  HttpStatus,
+} from '@nestjs/common';
 import { ValidationError } from 'class-validator';
 import { Request, Response } from 'express';
 
@@ -31,14 +36,14 @@ export class ValidationExceptionFilter implements ExceptionFilter {
 // Helper function to format validation errors
 export function formatValidationErrors(errors: ValidationError[]) {
   const result: Record<string, any> = {};
-  
-  errors.forEach(error => {
+
+  errors.forEach((error) => {
     if (error.children && error.children.length > 0) {
       result[error.property] = formatValidationErrors(error.children);
     } else {
       result[error.property] = Object.values(error.constraints || {});
     }
   });
-  
+
   return result;
 }

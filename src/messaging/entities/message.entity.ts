@@ -1,4 +1,12 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { IsNotEmpty, Length } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { User } from '../../auth/entities/user.entity';
@@ -25,7 +33,11 @@ export class Message {
   @Column()
   receiverId: string;
 
-  @ApiProperty({ description: 'Content of the message', minLength: 1, maxLength: 1000 })
+  @ApiProperty({
+    description: 'Content of the message',
+    minLength: 1,
+    maxLength: 1000,
+  })
   @Column('text')
   @IsNotEmpty()
   @Length(1, 1000, { message: 'Message must be between 1 and 1000 characters' })
@@ -42,4 +54,4 @@ export class Message {
   @ApiProperty({ description: 'When the message was last updated' })
   @UpdateDateColumn()
   updatedAt: Date;
-} 
+}

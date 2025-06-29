@@ -26,7 +26,9 @@ describe('FeedController (e2e)', () => {
     app = moduleFixture.createNestApplication();
     await app.init();
 
-    reportRepo = moduleFixture.get<Repository<Report>>(getRepositoryToken(Report));
+    reportRepo = moduleFixture.get<Repository<Report>>(
+      getRepositoryToken(Report),
+    );
     postRepo = moduleFixture.get<Repository<Post>>(getRepositoryToken(Post));
     userRepo = moduleFixture.get<Repository<User>>(getRepositoryToken(User));
 
@@ -48,7 +50,11 @@ describe('FeedController (e2e)', () => {
 
     // Create test post, reporter, and report
     const post = await postRepo.save({ content: 'Test post' });
-    const reporter = await userRepo.save({ email: 'reporter@test.com', password: 'pw', role: UserRole.FREELANCER });
+    const reporter = await userRepo.save({
+      email: 'reporter@test.com',
+      password: 'pw',
+      role: UserRole.FREELANCER,
+    });
     await reportRepo.save({
       reason: 'Test reason',
       post,
@@ -62,9 +68,7 @@ describe('FeedController (e2e)', () => {
 
   describe('GET /feed/reports', () => {
     it('should return 401 for unauthenticated users', async () => {
-      return request(app.getHttpServer())
-        .get('/feed/reports')
-        .expect(401);
+      return request(app.getHttpServer()).get('/feed/reports').expect(401);
     });
 
     it('should return 403 for non-admin users', async () => {

@@ -9,11 +9,12 @@ import { ApplicationsModule } from 'src/applications/applications.module';
 
 @Module({
   imports: [
-   ApplicationsModule ,TypeOrmModule.forFeature([Notification]),
-    forwardRef(() => AuthModule), 
+    ApplicationsModule,
+    TypeOrmModule.forFeature([Notification]),
+    forwardRef(() => AuthModule),
   ],
   controllers: [NotificationsController],
   providers: [NotificationsService],
-  exports: [NotificationsService], 
+  exports: [NotificationsService],
 })
 export class NotificationsModule {}

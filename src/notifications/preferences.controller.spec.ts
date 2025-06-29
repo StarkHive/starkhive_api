@@ -20,7 +20,9 @@ describe('PreferencesController', () => {
 
   const mockPreferencesService = {
     create: jest.fn().mockResolvedValue(mockPreferences),
-    update: jest.fn().mockResolvedValue({ ...mockPreferences, application: false }),
+    update: jest
+      .fn()
+      .mockResolvedValue({ ...mockPreferences, application: false }),
   };
 
   beforeEach(async () => {

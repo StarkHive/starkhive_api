@@ -1,4 +1,9 @@
-import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
+import {
+  Injectable,
+  NestInterceptor,
+  ExecutionContext,
+  CallHandler,
+} from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Reflector } from '@nestjs/core';
@@ -20,22 +25,24 @@ export class ExcludeSoftDeleteInterceptor implements NestInterceptor {
     }
 
     return next.handle().pipe(
-      map(data => {
+      map((data) => {
         if (!data) return data;
-        
+
         // Handle arrays
         if (Array.isArray(data)) {
-          return data.filter(item => {
+          return data.filter((item) => {
             if (!item || typeof item !== 'object') return true;
             return item.deletedAt === null || item.deletedAt === undefined;
           });
         }
-        
+
         // Handle single objects
         if (typeof data === 'object' && 'deletedAt' in data) {
-          return data.deletedAt === null || data.deletedAt === undefined ? data : null;
+          return data.deletedAt === null || data.deletedAt === undefined
+            ? data
+            : null;
         }
-        
+
         return data;
       }),
     );

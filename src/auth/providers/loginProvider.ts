@@ -47,14 +47,15 @@ export class LogInProvider {
     // Check if user exists in database
     const user = await this.authService.getOneByEmail(loginDto.email);
 
-
     if (!user) {
       throw new UnauthorizedException('Invalid email or password');
     }
 
     // Check if email is verified
     if (!user.isEmailVerified) {
-      throw new UnauthorizedException('Please verify your email before logging in');
+      throw new UnauthorizedException(
+        'Please verify your email before logging in',
+      );
     }
 
     // Compare password
@@ -74,7 +75,7 @@ export class LogInProvider {
     if (!isCheckedPassword) {
       throw new UnauthorizedException('email or password is incorrect');
     }
-    
+
     // Generate tokens
     return await this.generateTokenProvider.generateTokens(user);
   }

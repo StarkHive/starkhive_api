@@ -1,120 +1,127 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, Index } from "typeorm"
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  Index,
+} from 'typeorm';
 
 export enum JobType {
-  FULL_TIME = "full_time",
-  PART_TIME = "part_time",
-  CONTRACT = "contract",
-  INTERNSHIP = "internship",
-  FREELANCE = "freelance",
+  FULL_TIME = 'full_time',
+  PART_TIME = 'part_time',
+  CONTRACT = 'contract',
+  INTERNSHIP = 'internship',
+  FREELANCE = 'freelance',
 }
 
 export enum JobStatus {
-  ACTIVE = "active",
-  INACTIVE = "inactive",
-  CLOSED = "closed",
-  DRAFT = "draft",
+  ACTIVE = 'active',
+  INACTIVE = 'inactive',
+  CLOSED = 'closed',
+  DRAFT = 'draft',
 }
 
 export enum ExperienceLevel {
-  ENTRY = "entry",
-  JUNIOR = "junior",
-  MID = "mid",
-  SENIOR = "senior",
-  LEAD = "lead",
-  EXECUTIVE = "executive",
+  ENTRY = 'entry',
+  JUNIOR = 'junior',
+  MID = 'mid',
+  SENIOR = 'senior',
+  LEAD = 'lead',
+  EXECUTIVE = 'executive',
 }
 
-@Entity("jobs")
-@Index(["status", "createdAt"])
-@Index(["location"])
-@Index(["jobType"])
+@Entity('jobs')
+@Index(['status', 'createdAt'])
+@Index(['location'])
+@Index(['jobType'])
 export class Job {
-  @PrimaryGeneratedColumn("uuid")
-  id: string
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ length: 200 })
   @Index()
-  title: string
+  title: string;
 
-  @Column("text")
-  description: string
+  @Column('text')
+  description: string;
 
   @Column({ length: 100 })
   @Index()
-  company: string
+  company: string;
 
   @Column({ length: 100 })
-  location: string
+  location: string;
 
   @Column({
-    type: "enum",
+    type: 'enum',
     enum: JobType,
     default: JobType.FULL_TIME,
   })
-  jobType: JobType
+  jobType: JobType;
 
   @Column({
-    type: "enum",
+    type: 'enum',
     enum: JobStatus,
     default: JobStatus.ACTIVE,
   })
-  status: JobStatus
+  status: JobStatus;
 
   @Column({
-    type: "enum",
+    type: 'enum',
     enum: ExperienceLevel,
     default: ExperienceLevel.MID,
   })
-  experienceLevel: ExperienceLevel
+  experienceLevel: ExperienceLevel;
 
-  @Column("decimal", { precision: 10, scale: 2, nullable: true })
-  salaryMin: number
+  @Column('decimal', { precision: 10, scale: 2, nullable: true })
+  salaryMin: number;
 
-  @Column("decimal", { precision: 10, scale: 2, nullable: true })
-  salaryMax: number
+  @Column('decimal', { precision: 10, scale: 2, nullable: true })
+  salaryMax: number;
 
   @Column({ length: 10, nullable: true })
-  salaryCurrency: string
+  salaryCurrency: string;
 
-  @Column("text", { array: true, default: [] })
-  requirements: string[]
+  @Column('text', { array: true, default: [] })
+  requirements: string[];
 
-  @Column("text", { array: true, default: [] })
-  responsibilities: string[]
+  @Column('text', { array: true, default: [] })
+  responsibilities: string[];
 
-  @Column("text", { array: true, default: [] })
-  benefits: string[]
+  @Column('text', { array: true, default: [] })
+  benefits: string[];
 
-  @Column("text", { array: true, default: [] })
-  skills: string[]
+  @Column('text', { array: true, default: [] })
+  skills: string[];
 
   @Column({ length: 100, nullable: true })
-  contactEmail: string
+  contactEmail: string;
 
   @Column({ length: 20, nullable: true })
-  contactPhone: string
+  contactPhone: string;
 
-  @Column({ type: "date", nullable: true })
-  applicationDeadline: Date
-
-  @Column({ default: false })
-  isRemote: boolean
+  @Column({ type: 'date', nullable: true })
+  applicationDeadline: Date;
 
   @Column({ default: false })
-  isUrgent: boolean
+  isRemote: boolean;
 
   @Column({ default: false })
-  isFeatured: boolean
+  isUrgent: boolean;
+
+  @Column({ default: false })
+  isFeatured: boolean;
 
   @Column({ default: 0 })
-  viewCount: number
+  viewCount: number;
 
   @Column({ default: 0 })
-  applicationCount: number
+  applicationCount: number;
 
   @CreateDateColumn()
-  createdAt: Date
+  createdAt: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date
+  updatedAt: Date;
 }
