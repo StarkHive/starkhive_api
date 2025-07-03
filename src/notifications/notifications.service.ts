@@ -215,4 +215,17 @@ export class NotificationsService {
       where: { userId, isRead: false },
     });
   }
+
+  async createNotification(userId: string, message: string, type: NotificationType = NotificationType.GENERAL): Promise<Notification> {
+    const notification = this.notificationRepository.create({ userId, message, type });
+    return this.notificationRepository.save(notification);
+  }
+
+  async getUserNotifications(userId: string, limit = 20): Promise<Notification[]> {
+    return this.notificationRepository.find({
+      where: { userId },
+      order: { createdAt: 'DESC' },
+      take: limit,
+    });
+  }
 }
