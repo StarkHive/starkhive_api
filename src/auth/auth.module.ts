@@ -8,16 +8,19 @@ import { BcryptProvider } from './providers/bcrypt';
 import { PasswordReset } from './entities/password-reset.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { MailService } from '../mail/mail.service';
+import { MailModule } from 'src/mail/mail.module';
 import { LogInProvider } from './providers/loginProvider';
 import { GenerateTokensProvider } from './providers/generateTokensProvider';
 import { Portfolio } from './entities/portfolio.entity';
+import { JwtStrategy } from './strategies/jwt.strategy';
+import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { EmailToken } from './entities/email-token.entity';
 import { Team } from './entities/team.entity';
 import { TeamMember } from './entities/team-member.entity';
 import { TeamActivity } from './entities/team-activity.entity';
 import { TeamService } from './services/team.service';
-import { MailModule } from 'src/mail/mail.module';
 import { ApiKey } from './entities/api-key.entity';
 import { ApiKeyService } from './services/api-key.service';
 import { ApiKeyGuard } from './guards/api-key.guard';
@@ -49,12 +52,18 @@ import { SkillVerification } from './entities/skills-verification.entity';
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => {
         const secret = configService.get<string>('JWT_SECRET');
+        const refreshSecret = configService.get<string>('JWT_REFRESH_SECRET');
+        
         if (!secret) {
           throw new Error('JWT_SECRET environment variable is required');
         }
+        if (!refreshSecret) {
+          throw new Error('JWT_REFRESH_SECRET environment variable is required');
+        }
+        
         return {
           secret,
-          signOptions: { expiresIn: '1h' },
+          signOptions: { expiresIn: '15m' },
         };
       },
       global: true,
@@ -67,21 +76,29 @@ import { SkillVerification } from './entities/skills-verification.entity';
     PerformanceService,
     LogInProvider,
     GenerateTokensProvider,
-    MailService,
-    ApiKeyService,
-    ApiKeyGuard,
     {
       provide: HashingProvider,
       useClass: BcryptProvider,
     },
+    JwtStrategy,
+    JwtRefreshStrategy,
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+    ApiKeyService,
+    ApiKeyGuard,
   ],
   exports: [
     AuthService,
     TeamService,
     PerformanceService,
     TypeOrmModule,
+    JwtModule,
+    JwtStrategy,
+    JwtRefreshStrategy,
+    JwtAuthGuard,
     HashingProvider,
-    MailService,
     GenerateTokensProvider,
   ],
 })

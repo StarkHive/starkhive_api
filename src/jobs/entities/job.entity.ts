@@ -291,6 +291,13 @@ export class Job {
   @OneToMany(() => Application, (application) => application.job)
   applications: Application[];
 
+  @ManyToOne(() => User, (user) => user.jobs, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'userId' })
+  user: User;
+
+  @Column({ nullable: true })
+  userId: number;
+
   @Column()
   ownerId: string;
 

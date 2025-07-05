@@ -88,8 +88,12 @@ export class User {
   @OneToMany(() => Comment, (comment) => comment.user)
   comments: Comment[];
 
+  @Column({ nullable: true })
+  refreshToken?: string;
+
   @Column({ default: false })
   isSuspended: boolean;
+
   @ApiProperty({
     description: 'Whether the user has verified their email',
     example: false,
