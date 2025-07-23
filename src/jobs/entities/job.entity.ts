@@ -308,8 +308,12 @@ export class Job {
   @Column()
   recruiterId: string;
 
+  @ManyToOne(() => User, { nullable: true, eager: false })
+  @JoinColumn({ name: 'freelancerId' })
+  freelancer?: User;
+
   @Column({ nullable: true })
-  freelancer: any;
+  freelancerId?: string;
 
   // Team functionality
   @ManyToOne(() => Team, { nullable: true, eager: false })
@@ -348,5 +352,15 @@ export class Job {
 
   @Column({ type: 'varchar', length: 20, nullable: true })
   currency?: string;
+
+  @Column({ nullable: true })
+  escrowId?: string;
+
+  @Column({ type: 'timestamp', nullable: true })
+  expiredAt?: Date;
+
+  @Column({ type: 'timestamp', nullable: true })
+  archivedAt?: Date;
+
   employer: any;
 }

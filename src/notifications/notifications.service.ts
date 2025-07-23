@@ -204,21 +204,35 @@ export class NotificationsService {
     }
   }
 
-async markAsUnread(notificationId: string, userId: string) {
-  const notification = await this.notificationRepository.findOne({
-    where: { id: notificationId, userId },
-  });
+  async markAsUnread(notificationId: string, userId: string) {
+    const notification = await this.notificationRepository.findOne({
+      where: { id: notificationId, userId },
+    });
 
-  if (!notification) {
-    throw new NotFoundException('Notification not found');
+    if (!notification) {
+      throw new NotFoundException('Notification not found');
+    }
+
+    notification.isRead = false;
+    notification.updatedAt = new Date();
+
+    return await this.notificationRepository.save(notification);
   }
 
-  notification.isRead = false;
-  notification.updatedAt = new Date();
+  async markAsRead(notificationId: string, userId: string) {
+    const notification = await this.notificationRepository.findOne({
+      where: { id: notificationId, userId },
+    });
 
-  return await this.notificationRepository.save(notification);
-}
+    if (!notification) {
+      throw new NotFoundException('Notification not found');
+    }
 
+    notification.isRead = true;
+    notification.updatedAt = new Date();
+
+    return await this.notificationRepository.save(notification);
+  }
 
   async markAllAsRead(userId: string) {
     await this.notificationRepository.update(

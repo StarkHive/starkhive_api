@@ -8,7 +8,37 @@ export class JobAdapter {
    * Convert a single Job entity to the format expected by JobResponseDto
    */
   static toJobPostingEntity(job: Job): JobResponseDto {
-    return new JobResponseDto(job);
+    // Create a compatible object that matches the job-posting Job interface
+    const compatibleJob = {
+      id: job.id,
+      title: job.title,
+      description: job.description,
+      company: job.company || '',
+      location: job.location || '',
+      jobType: job.jobType || 'full_time',
+      status: job.status,
+      experienceLevel: job.experienceLevel || 'mid',
+      salaryMin: job.salaryMin,
+      salaryMax: job.salaryMax,
+      salaryCurrency: job.salaryCurrency,
+      requirements: job.requirements || [],
+      responsibilities: job.responsibilities || [],
+      benefits: job.benefits || [],
+      skills: job.skills || [],
+      contactEmail: job.contactEmail,
+      contactPhone: job.contactPhone,
+      applicationDeadline: job.applicationDeadline,
+      isRemote: job.isRemote || false,
+      isUrgent: job.isUrgent || false,
+      isFeatured: job.isFeatured || false,
+      viewCount: job.viewCount || 0,
+      applicationCount: job.applicationCount || 0,
+      createdAt: job.createdAt,
+      updatedAt: job.updatedAt,
+      freelancer: job.freelancer || null,
+    };
+
+    return new JobResponseDto(compatibleJob as any);
   }
 
   /**

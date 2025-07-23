@@ -134,11 +134,13 @@ export class FeedService {
 
     const updatedJob = await this.jobRepo.save(job);
 
-    await this.notificationsService.sendJobStatusNotification(
-      job.freelancer.id,
-      job.title,
-      status as 'approved' | 'rejected',
-    );
+    if (job.freelancer) {
+      await this.notificationsService.sendJobStatusNotification(
+        job.freelancer,
+        job.title,
+        status as 'approved' | 'rejected',
+      );
+    }
 
     return updatedJob;
   }

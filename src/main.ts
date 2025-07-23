@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
-import * as compression from 'compression';
+import compression from 'compression';
 import { ConfigService } from '@nestjs/config';
 import { useContainer } from 'class-validator';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';

@@ -3,7 +3,7 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { InjectRepository, InjectDataSource } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 import { Recommendation } from './entities/recommendation.entity';
 import { Job } from './entities/job.entity';
@@ -35,6 +35,7 @@ export class RecommendationService {
     private readonly applicationRepository: Repository<Application>,
     @InjectRepository(SavedJob)
     private readonly savedJobRepository: Repository<SavedJob>,
+    @InjectDataSource()
     private readonly dataSource: DataSource,
   ) {}
 

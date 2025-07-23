@@ -4,7 +4,7 @@ import {
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { InjectRepository, InjectDataSource } from '@nestjs/typeorm';
 import { Repository, DataSource, LessThan } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { v4 as uuidv4 } from 'uuid';
@@ -47,6 +47,7 @@ export class BackupService {
   constructor(
     @InjectRepository(Backup)
     private readonly backupRepository: Repository<Backup>,
+    @InjectDataSource()
     private readonly dataSource: DataSource,
     private readonly configService: ConfigService,
   ) {

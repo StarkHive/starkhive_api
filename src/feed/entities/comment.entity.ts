@@ -1,5 +1,5 @@
 import { User } from 'src/auth/entities/user.entity';
-import { Post } from 'src/post/entities/post.entity';
+import { Post } from './post.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,

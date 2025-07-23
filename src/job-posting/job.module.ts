@@ -10,4 +10,4 @@ import { Job } from './entities/job.entity';
   providers: [JobService],
   exports: [JobService],
 })
-export class JobModule {}
+export class JobPostingModule {}

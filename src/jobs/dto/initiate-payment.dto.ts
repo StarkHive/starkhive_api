@@ -16,3 +16,5 @@ export class InitiatePaymentDto {
   @IsEnum(['ETH', 'USDC', 'STRK'])
   currency: 'ETH' | 'USDC' | 'STRK';
 }
+
+export class CreateEscrowDto extends InitiatePaymentDto {}

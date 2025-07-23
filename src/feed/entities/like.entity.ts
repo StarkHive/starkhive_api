@@ -6,7 +6,7 @@ import {
   CreateDateColumn,
   Unique,
 } from 'typeorm';
-import { Post } from '../../post/entities/post.entity';
+import { Post } from './post.entity';
 import { User } from '../../auth/entities/user.entity';
 
 @Entity()

@@ -6,8 +6,10 @@ import { User } from './auth/entities/user.entity';
 import { EmailToken } from './auth/entities/email-token.entity';
 import { PasswordReset } from './auth/entities/password-reset.entity';
 import { Portfolio } from './auth/entities/portfolio.entity';
+import { SkillVerification } from './auth/entities/skills-verification.entity';
 import { Post } from './feed/entities/post.entity';
 import { Comment } from './feed/entities/comment.entity';
+import { Like } from './feed/entities/like.entity';
 import { SavedPost } from './feed/entities/savedpost.entity';
 import { Job } from './jobs/entities/job.entity';
 import { SavedJob } from './jobs/entities/saved-job.entity';
@@ -33,8 +35,10 @@ export const AppDataSource = new DataSource({
     EmailToken,
     PasswordReset,
     Portfolio,
+    SkillVerification,
     Post,
     Comment,
+    Like,
     SavedPost,
     Job,
     SavedJob,

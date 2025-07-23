@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Inject, forwardRef } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { JobsService } from '../jobs.service';
 
@@ -6,7 +6,10 @@ import { JobsService } from '../jobs.service';
 export class JobCleanupTask {
   private readonly logger = new Logger(JobCleanupTask.name);
 
-  constructor(private readonly jobsService: JobsService) {}
+  constructor(
+    @Inject(forwardRef(() => JobsService))
+    private readonly jobsService: JobsService,
+  ) {}
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async handleExpiredJobs() {

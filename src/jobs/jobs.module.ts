@@ -9,18 +9,13 @@ import { AntiSpamModule } from '../anti-spam/anti-spam.module';
 import { JobsController } from './jobs.controller';
 import { FeedModule } from 'src/feed/feed.module';
 import { Job } from './entities/job.entity';
+import { Escrow } from './entities/escrow.entity';
 import { SavedJob } from './entities/saved-job.entity';
 import { Recommendation } from './entities/recommendation.entity';
 import { ExcludeSoftDeleteInterceptor } from 'src/common/interceptors/exclude-soft-delete.interceptor';
 import { BlockchainService } from './blockchain/blockchain.service';
 import { JobTemplate } from './entities/job-template.entity';
-import { ScheduleModule } from '@nestjs/schedule';
 import { JobCleanupTask } from './tasks/job-cleanup.task';
-
-@Module({
-  imports: [ScheduleModule.forRoot()],
-  providers: [JobCleanupTask],
-})
 import { CurrencyConversionService } from './services/currency-conversion.service';
 import { Transaction } from './entities/transaction.entity';
 
@@ -36,12 +31,13 @@ import { Transaction } from './entities/transaction.entity';
       Recommendation,
       User,
       Transaction,
+      Escrow,
     ]),
     AntiSpamModule,
   ],
   providers: [
     JobsService,
-    JobCleanupTask,
+    // JobCleanupTask,
     RecommendationService,
     {
       provide: APP_INTERCEPTOR,

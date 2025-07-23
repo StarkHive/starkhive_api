@@ -195,6 +195,8 @@ export enum JobStatus {
   INPROGRESS = 'in_progress',
   REJECTED = 'rejected',
   OPEN = 'open', // Added from your original entity
+  EXPIRED = 'expired',
+  ARCHIVED = 'archived',
 }
 
 export enum CompletionStatus {

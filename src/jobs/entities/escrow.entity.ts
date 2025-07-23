@@ -1,4 +1,13 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
+import { Job } from './job.entity';
 
 export enum EscrowStatus {
   LOCKED = 'locked',
@@ -15,6 +24,10 @@ export class Escrow {
   @Column()
   jobId: string;
 
+  @ManyToOne(() => Job, { eager: true })
+  @JoinColumn({ name: 'jobId' })
+  job: Job;
+
   @Column()
   recruiterId: string;
 
@@ -29,6 +42,18 @@ export class Escrow {
 
   @Column({ type: 'enum', enum: EscrowStatus, default: EscrowStatus.LOCKED })
   status: EscrowStatus;
+
+  @Column({ type: 'timestamp', nullable: true })
+  lockedAt?: Date;
+
+  @Column({ type: 'timestamp', nullable: true })
+  releasedAt?: Date;
+
+  @Column({ type: 'timestamp', nullable: true })
+  disputedAt?: Date;
+
+  @Column({ type: 'text', nullable: true })
+  disputeReason?: string;
 
   @CreateDateColumn()
   createdAt: Date;

@@ -24,7 +24,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
     }),
   ],
   controllers: [AdminController],
-  providers: [AdminService, JwtAuthGuard, RolesGuard],
+  providers: [AdminService, RolesGuard],
   exports: [AdminService],
 })
 export class AdminModule {}

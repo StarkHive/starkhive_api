@@ -8,12 +8,14 @@ import { Preferences } from './entities/preferences.entity';
 import { AuthModule } from '../auth/auth.module';
 import { ApplicationsModule } from 'src/applications/applications.module';
 import { SmsService } from './services/sms.service';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
   imports: [
     forwardRef(() => ApplicationsModule),
     TypeOrmModule.forFeature([Notification, NotificationDelivery, Preferences]),
     forwardRef(() => AuthModule),
+    MailModule,
   ],
   controllers: [NotificationsController],
   providers: [NotificationsService, SmsService],

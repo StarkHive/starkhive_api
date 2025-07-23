@@ -20,15 +20,18 @@ import { addHours, addDays, addMinutes } from 'date-fns';
 import * as crypto from 'crypto';
 import { MailService } from '../mail/mail.service';
 import { ConfigService } from '@nestjs/config';
-import type { LogInDto } from './dto/loginDto';
+import type { LoginDto } from './dto/login-user.dto';
 import { LogInProvider } from './providers/loginProvider';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { TeamService } from './services/team.service';
-import { SkillVerification, VerificationStatus } from './entities/skills-verification.entity';
-import type { 
-  CreateSkillVerificationDto, 
-  SkillAssessmentDto, 
-  UpdateSkillVerificationDto 
+import {
+  SkillVerification,
+  VerificationStatus,
+} from './entities/skills-verification.entity';
+import type {
+  CreateSkillVerificationDto,
+  SkillAssessmentDto,
+  UpdateSkillVerificationDto,
 } from './dto/skills.dto';
 
 @Injectable()
@@ -66,8 +69,8 @@ export class AuthService {
 
   // ... [keep all other methods exactly as they are] ...
 
-  async login(loginDto: LogInDto): Promise<{ 
-    accessToken: string; 
+  async login(loginDto: LoginDto): Promise<{
+    accessToken: string;
     refreshToken: string;
     user: Omit<User, 'password'>;
   }> {
@@ -87,14 +90,135 @@ export class AuthService {
     // Generate tokens using the refresh token flow
     const tokens = await this.getTokens(user.id, user.email);
     await this.updateRefreshToken(user.id, tokens.refreshToken);
-    
+
     // Remove password from the user object
     const { password: _, ...userWithoutPassword } = user;
-    
+
     return {
       ...tokens,
-      user: userWithoutPassword
+      user: userWithoutPassword,
     };
+  }
+
+  async getTokens(
+    userId: string,
+    email: string,
+  ): Promise<{
+    accessToken: string;
+    refreshToken: string;
+  }> {
+    const jwtPayload: JwtPayload = {
+      sub: userId,
+      email: email,
+    };
+
+    const [accessToken, refreshToken] = await Promise.all([
+      this.jwtService.signAsync(jwtPayload, {
+        secret: this.configService.get<string>('JWT_SECRET'),
+        expiresIn: '15m',
+      }),
+      this.jwtService.signAsync(jwtPayload, {
+        secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+        expiresIn: '7d',
+      }),
+    ]);
+
+    return {
+      accessToken,
+      refreshToken,
+    };
+  }
+
+  async updateRefreshToken(
+    userId: string,
+    refreshToken: string,
+  ): Promise<void> {
+    const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+    await this.userRepository.update(userId, {
+      refreshToken: hashedRefreshToken,
+    });
+  }
+
+  async refreshTokens(refreshToken: string): Promise<{
+    accessToken: string;
+    refreshToken: string;
+  }> {
+    const payload = this.jwtService.verify(refreshToken, {
+      secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+    });
+
+    const user = await this.userRepository.findOne({
+      where: { id: payload.sub },
+    });
+
+    if (!user || !user.refreshToken) {
+      throw new ForbiddenException('Access Denied');
+    }
+
+    const refreshTokenMatches = await bcrypt.compare(
+      refreshToken,
+      user.refreshToken,
+    );
+
+    if (!refreshTokenMatches) {
+      throw new ForbiddenException('Access Denied');
+    }
+
+    const tokens = await this.getTokens(user.id, user.email);
+    await this.updateRefreshToken(user.id, tokens.refreshToken);
+
+    return tokens;
+  }
+
+  async sendPasswordResetEmail(email: string): Promise<{ message: string }> {
+    const user = await this.userRepository.findOne({ where: { email } });
+
+    if (!user) {
+      // Don't reveal if email exists
+      return {
+        message:
+          'If an account with that email exists, a password reset email has been sent.',
+      };
+    }
+
+    // Generate reset token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const expiresAt = addHours(new Date(), 1); // 1 hour expiration
+
+    // Save reset token
+    const passwordReset = this.passwordResetRepository.create({
+      user,
+      token: resetToken,
+      expiresAt,
+    });
+
+    await this.passwordResetRepository.save(passwordReset);
+
+    // Send email with reset link
+    const resetUrl = `${this.configService.get<string>('FRONTEND_URL')}/auth/reset-password?token=${resetToken}`;
+
+    await this.mailService.sendEmail({
+      to: email,
+      subject: 'Password Reset Request',
+      template: 'password-reset',
+      context: {
+        resetUrl,
+        expiresIn: '1 hour',
+      },
+    });
+
+    return {
+      message:
+        'If an account with that email exists, a password reset email has been sent.',
+    };
+  }
+
+  async getOneByEmail(email: string): Promise<User | null> {
+    return this.userRepository.findOne({ where: { email } });
+  }
+
+  async validateUserById(userId: string): Promise<User | null> {
+    return this.userRepository.findOne({ where: { id: userId } });
   }
 
   // ... [keep all other methods exactly as they are] ...

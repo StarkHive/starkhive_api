@@ -3,9 +3,13 @@ import {
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
+  OneToMany,
   CreateDateColumn,
 } from 'typeorm';
 import { User } from 'src/auth/entities/user.entity';
+import { Like } from './like.entity';
+import { Comment } from './comment.entity';
+import { SavedPost } from './savedpost.entity';
 
 @Entity()
 export class Post {
@@ -18,11 +22,17 @@ export class Post {
   @Column({ nullable: true })
   image?: string;
 
-  @ManyToOne(() => User, (user) => user.posts, {
-    eager: true,
-    onDelete: 'CASCADE',
-  })
+  @ManyToOne(() => User, (user) => user.posts)
   user: User;
+
+  @OneToMany(() => Like, (like) => like.post)
+  likes: Like[];
+
+  @OneToMany(() => Comment, (comment) => comment.post)
+  comments: Comment[];
+
+  @OneToMany(() => SavedPost, (savedPost) => savedPost.post)
+  savedBy: SavedPost[];
 
   @CreateDateColumn()
   createdAt: Date;

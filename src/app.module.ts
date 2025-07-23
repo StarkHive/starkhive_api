@@ -4,12 +4,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AuthModule } from './auth/auth.module';
 import { User } from './auth/entities/user.entity';
-import { Message } from './messaging/entities/message.entity';
+import { EmailToken } from './auth/entities/email-token.entity';
+import { PasswordReset } from './auth/entities/password-reset.entity';
+import { Message } from './messaging/entities/messaging.entity';
 import { FeedModule } from './feed/feed.module';
 import { PostModule } from './post/post.module';
 import * as dotenv from 'dotenv';
 import { SavedPost } from './feed/entities/savedpost.entity';
-import { Post } from './post/entities/post.entity';
+import { Post } from './feed/entities/post.entity';
 import { MessagingModule } from './messaging/messaging.module';
 import { Team } from './auth/entities/team.entity';
 import { TeamMember } from './auth/entities/team-member.entity';
@@ -21,8 +23,12 @@ import { ApplicationsModule } from './applications/applications.module';
 import { AdminModule } from './admin/admin.module';
 import { ReportsModule } from './reports/reports.module';
 import { Comment } from './feed/entities/comment.entity';
+import { Like } from './feed/entities/like.entity';
 import { Job } from './jobs/entities/job.entity';
+import { SavedJob } from './jobs/entities/saved-job.entity';
+import { Recommendation } from './jobs/entities/recommendation.entity';
 import { Portfolio } from './auth/entities/portfolio.entity';
+import { SkillVerification } from './auth/entities/skills-verification.entity';
 import { Report } from './reports/entities/report.entity';
 import { BackupModule } from './backup/backup.module';
 import { Backup } from './backup/entities/backup.entity';
@@ -55,13 +61,19 @@ dotenv.config();
         database: configService.get<string>('DB_NAME'),
         entities: [
           User,
+          EmailToken,
+          PasswordReset,
           SavedPost,
           Post,
           Application,
           Message,
           Comment,
+          Like,
           Job,
+          SavedJob,
+          Recommendation,
           Portfolio,
+          SkillVerification,
           Report,
           Team,
           TeamMember,
@@ -95,10 +107,10 @@ dotenv.config();
     AvailabilityModule,
   ],
   providers: [
-    {
-      provide: APP_GUARD,
-      useClass: RateLimitGuard,
-    },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: RateLimitGuard,
+    // },
   ],
 })
 export class AppModule {}

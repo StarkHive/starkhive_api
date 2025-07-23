@@ -53,14 +53,16 @@ import { SkillVerification } from './entities/skills-verification.entity';
       useFactory: async (configService: ConfigService) => {
         const secret = configService.get<string>('JWT_SECRET');
         const refreshSecret = configService.get<string>('JWT_REFRESH_SECRET');
-        
+
         if (!secret) {
           throw new Error('JWT_SECRET environment variable is required');
         }
         if (!refreshSecret) {
-          throw new Error('JWT_REFRESH_SECRET environment variable is required');
+          throw new Error(
+            'JWT_REFRESH_SECRET environment variable is required',
+          );
         }
-        
+
         return {
           secret,
           signOptions: { expiresIn: '15m' },
@@ -82,6 +84,7 @@ import { SkillVerification } from './entities/skills-verification.entity';
     },
     JwtStrategy,
     JwtRefreshStrategy,
+    JwtAuthGuard,
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,

@@ -184,4 +184,25 @@ export class BlockchainService {
     // return Number(balance) / (10 ** tokenMeta.decimals);
     return 1000; // Mock: 1000 units (e.g., USDC, STRK)
   }
+
+  // Escrow methods for the jobs service
+  async lockFunds(
+    walletAddress: string,
+    currency: string,
+    amount: number,
+  ): Promise<void> {
+    this.logger.log(`Locking ${amount} ${currency} from ${walletAddress}`);
+    // TODO: Implement actual blockchain fund locking
+    // For now, this is a mock implementation
+  }
+
+  async releaseFunds(
+    walletAddress: string,
+    currency: string,
+    amount: number,
+  ): Promise<void> {
+    this.logger.log(`Releasing ${amount} ${currency} to ${walletAddress}`);
+    // TODO: Implement actual blockchain fund release
+    // For now, this is a mock implementation
+  }
 }
