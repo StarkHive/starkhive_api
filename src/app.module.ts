@@ -20,6 +20,10 @@ import { Application } from './applications/entities/application.entity';
 import { ApplicationsModule } from './applications/applications.module';
 import { AdminModule } from './admin/admin.module';
 import { ReportsModule } from './reports/reports.module';
+import { DisputesModule } from './jobs/disputes.module';
+import { Dispute } from './jobs/entities/dispute.entity';
+import { DisputeEvidence } from './jobs/entities/dispute-evidence.entity';
+import { Escrow } from './jobs/entities/escrow.entity';
 import { Comment } from './feed/entities/comment.entity';
 import { Job } from './jobs/entities/job.entity';
 import { Portfolio } from './auth/entities/portfolio.entity';
@@ -67,6 +71,9 @@ dotenv.config();
           TeamMember,
           TeamActivity,
           Backup,
+          Escrow,
+          Dispute,
+          DisputeEvidence,
         ],
         synchronize: true,
       }),
@@ -79,6 +86,7 @@ dotenv.config();
     AntiSpamModule,
     AdminModule,
     ReportsModule,
+    DisputesModule,
     ApplicationsModule,
     BackupModule,
 
